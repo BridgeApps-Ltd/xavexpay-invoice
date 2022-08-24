@@ -1,1 +1,1 @@
-.
+echo "... Initiating storing ami into S3 Bucket" 

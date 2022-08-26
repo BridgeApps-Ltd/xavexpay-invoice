@@ -9,3 +9,5 @@ aws_instance_name=$(aws ec2 describe-tags --filters Name=resource-id,Values=${aw
 
 echo "Instance Name => ${green}${aws_instance_name}${white}"
 aws ec2 stop-instances --region ${aws_region} --instance-ids ${aws_instance_id} --output table
+sleep 5
+aws ec2 stop-instances --region ${aws_region} --instance-ids ${aws_instance_id} --output table

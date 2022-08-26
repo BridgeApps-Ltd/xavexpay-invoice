@@ -7,5 +7,5 @@ aws_region="ap-south-1"
 aws_instance_id="i-0123456789abcdef"
 aws_instance_name=$(aws ec2 describe-tags --filters Name=resource-id,Values=${aws_instance_id} Name=key,Values=Name --query Tags[].Value --output text)
 
-echo "Stopping ec2 Instance => ${green}${aws_instance_name}${white}"
-aws ec2 stop-instances --region ${aws_region} --instance-ids ${aws_instance_id}
+echo "Instance Name => ${green}${aws_instance_name}${white}"
+aws ec2 stop-instances --region ${aws_region} --instance-ids ${aws_instance_id} --output text

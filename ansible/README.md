@@ -34,3 +34,7 @@ ansible-playbook stopEc2Instance.yml
 Site to check yaml validations 
 --------------------------------------------
 https://yamlchecker.com/
+
+References
+--------------------------------------------
+https://docs.ansible.com/ansible/2.3/ec2_module.html#examples

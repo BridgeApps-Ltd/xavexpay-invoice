@@ -13,4 +13,5 @@ sudo apt install awscli
 Install boto and boto3
 --------------------------------------------
 sudo apt install python-pip
+
 pip install boto boto3

@@ -23,6 +23,7 @@ run playbook
 ######################################
 
 ansible-playbook startEc2Instance.yml
+
 --------------------------------------------
 ######################################
 # stopping ec2 instance 

@@ -31,3 +31,6 @@ ansible-playbook startEc2Instance.yml
 
 ansible-playbook stopEc2Instance.yml
 
+Site to check yaml validations 
+--------------------------------------------
+https://yamlchecker.com/

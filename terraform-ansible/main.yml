@@ -1,0 +1,10 @@
+---
+- import_playbook: playbooks/requirements.yml
+- import_playbook: playbooks/user.yml
+- import_playbook: playbooks/hostname.yml
+- import_playbook: playbooks/clone.yml
+- import_playbook: playbooks/setup_dependencies.yml
+- import_playbook: playbooks/nginx.yml
+- import_playbook: playbooks/service.yml
+- import_playbook: playbooks/server.yml
+- import_playbook: playbooks/app.yml

@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Add the user 'innoctive' and add it to 'sudo'
+      user:
+        name: "{{ user }}"
+        password: "{{ password }}"
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        createhome: yes
+        home: /home/innoctive
+
+    - name: Add SSH key to 'innoctive'
+      authorized_key:
+        user: "{{ user }}"
+        state: present
+        key: "{{ lookup('file', '/home/mshaikh/CARGOFL-TERRA/terraform-ansible/pub_key') }}"
+
+    - name: Deny root from logging in
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^(#)?PermitRootLogin \w*$'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Allow specific users to log in
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^AllowUsers'
+        line: 'AllowUsers {{ user }}'
+        state: present
+   

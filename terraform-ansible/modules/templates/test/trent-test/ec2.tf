@@ -1,0 +1,34 @@
+resource "aws_instance" "web" {
+  ami             = var.imageid
+  instance_type   = var.instanceType
+  key_name        = var.key_name
+  security_groups = [var.security_grp]
+  tags = {
+    Name = "${var.instance_name}"
+  }
+
+    provisioner "remote-exec" {
+    inline = [
+      "sudo apt update"
+    ]
+  }  
+    connection {
+      host        = aws_instance.web.public_ip
+      type        = "ssh"
+      user        = var.user
+      private_key = file(var.keyPath)
+      timeout     = "60s"
+    }
+	
+   provisioner "local-exec" {
+    command = "echo ${aws_instance.web.public_ip} > inventory"
+  }
+
+  provisioner "local-exec" {
+    command = "ansible-playbook main.yml -e 'gitpass=${var.gitpass}' -e 'keyPath=${var.keyPath}'"
+  }
+ }
+
+
+
+

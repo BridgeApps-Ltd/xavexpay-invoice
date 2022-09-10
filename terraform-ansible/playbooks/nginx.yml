@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: setup nginx configurations
+      ansible.builtin.shell: |
+        sudo git config --global --add safe.directory /home/innoctive/cargofl
+        sudo cp /home/innoctive/cflconfigs/nginxconfigs/cargofl.conf /etc/nginx/sites-enabled/cargofl.conf
+        sudo service nginx restart

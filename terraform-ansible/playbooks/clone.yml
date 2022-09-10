@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: clone cargofl
+      ansible.builtin.git:
+        repo: https://{{user}}:{{gitpass}}@github.com/innoctive/cargofl.git
+        dest: /home/innoctive/cargofl
+        single_branch: yes
+        version: "{{ gitbranch }}"
+
+    - name: clone cflconfigs
+      ansible.builtin.git:
+        repo: https://{{user}}:{{gitpass}}@github.com/mubininnoctive/cflconfigs.git
+        dest: /home/innoctive/cflconfigs
+        single_branch: yes
+        version: main

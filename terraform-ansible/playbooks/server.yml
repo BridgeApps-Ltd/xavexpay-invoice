@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: setup server configurations
+      ansible.builtin.shell: |
+        sudo timedatectl set-timezone Asia/Kolkata
+        sudo locale-gen "en_IN.UTF-8"

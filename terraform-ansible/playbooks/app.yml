@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: configure application and restart
+      ansible.builtin.shell: |
+        cp /home/innoctive/cflconfigs/cx/mt/test/mt_test_config.ini /home/innoctive/mt_test_config.ini
+        sudo -u innoctive -H bash -c "cd /home/innoctive/cargofl; python3 main.py ../mt_test_config.ini"
+        sudo service cargofl restart
+        sudo rm -rf /home/innoctive/cflconfigs

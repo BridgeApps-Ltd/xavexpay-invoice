@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: setup cargofl service file
+      ansible.builtin.shell: |
+        sudo cp /home/innoctive/cflconfigs/service-files/cargofl.service /etc/systemd/system/cargofl.service
+        sudo systemctl daemon-reload

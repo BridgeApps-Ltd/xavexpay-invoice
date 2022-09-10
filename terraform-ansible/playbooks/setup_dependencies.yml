@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: setup dependencies with virtual environment
+      ansible.builtin.shell: |
+        sudo python3 -m venv /home/innoctive/venv
+        sudo chown -R innoctive:innoctive /home/innoctive/
+        sudo rm /etc/nginx/sites-enabled/default
+        sudo -u innoctive -H bash -c "cd /home/innoctive; source /home/innoctive/venv/bin/activate && python3 -m pip install pip==21.0.1 && python3 -m pip install -r cargofl/requirements.txt && deactivate"
+
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /home/innoctive/
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        state: directory
+        recurse: yes

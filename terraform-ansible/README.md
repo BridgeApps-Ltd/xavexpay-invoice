@@ -5,23 +5,11 @@
 
 -------------------------------------------------------------------------------------------
 
-terraform plan -var "aws_access_key=add_aws_access_key_here" \\
-               -var "aws_secret_key=add_aws_secret_key_here" \\
-							 -var "aws_region=ap-south-1" \\
-							 -var "gitpass=add_git_token_here" \\
-							 -var "keyPath=.keys/add_private_key_here"
+terraform plan -var "aws_access_key=add_aws_access_key_here" -var "aws_secret_key=add_aws_secret_key_here" -var "aws_region=ap-south-1" -var "gitpass=add_git_token_here" -var "keyPath=.keys/add_private_key_here"
 							 
 ------------------------------------------------------------------------------------------
-terraform apply -var "aws_access_key=add_aws_access_key_here" \
-                -var "aws_secret_key=add_aws_secret_key_here" \
-							  -var "aws_region=ap-south-1" \
-							  -var "gitpass=add_git_token_here" \
-							  -var "keyPath=.keys/add_private_key_here"
+terraform apply -var "aws_access_key=add_aws_access_key_here" -var "aws_secret_key=add_aws_secret_key_here" -var "aws_region=ap-south-1" -var "gitpass=add_git_token_here" -var "keyPath=.keys/add_private_key_here"
                 
 -------------------------------------------------------------------------------------------                
-terraform destroy -var "aws_access_key=add_aws_access_key_here" \
-                  -var "aws_secret_key=add_aws_secret_key_here" \
-							    -var "aws_region=ap-south-1" \
-							    -var "gitpass=add_git_token_here" \
-							    -var "keyPath=.keys/add_private_key_here"
+terraform destroy -var "aws_access_key=add_aws_access_key_here" -var "aws_secret_key=add_aws_secret_key_here" -var "aws_region=ap-south-1" -var "gitpass=add_git_token_here" -var "keyPath=.keys/add_private_key_here"
 							    

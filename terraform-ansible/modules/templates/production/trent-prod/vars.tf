@@ -18,9 +18,7 @@ variable "homePath" {
   default = "/home/ubuntu"
 }
 
-variable "keyPath" {
-  default = "/home/mshaikh/CARGOFL-TERRA/.keys/mubiTEST"
-}
+variable "keyPath" {}
 
 variable "key_name" {
   default = "mubinAWS"

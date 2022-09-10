@@ -18,14 +18,11 @@ variable "homePath" {
   default = "/home/ubuntu"
 }
 
-variable "keyPath" {
-  default = "/home/mshaikh/CARGOFL-TERRA/.keys/mubiTEST"
-}
-
 variable "key_name" {
   default = "mubinAWS"
 }
 
+variable "keyPath" {}
 variable "gitpass" {}
 
 variable "instance_name" {

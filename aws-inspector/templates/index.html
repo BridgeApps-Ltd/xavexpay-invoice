@@ -1,0 +1,208 @@
+<html>
+<head>
+    <title>AWS Content Inspector</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.jqueryui.min.css">
+
+
+    <style>
+    body {
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        margin:0px;
+        padding:0px;
+        width:100%;
+    }
+    h1 {
+        padding-top:5px;
+        padding-bottom:10px;
+        padding-left: 10px;
+    }
+    .inspecttable {
+        margin-top:30px;
+    }
+    .setProfile {
+        size:20px;
+    }
+    .pageHeader {
+        background-color:darkcyan;
+    }
+    .pageFilters {
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        size:20px;
+    }
+    .pageBody {
+        font-size: 12px;
+        padding-left: 10px;
+        padding-right:10px;
+    }
+    .primary{
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .secondary{
+        background-color:black; /* Green */
+        border: none;
+        color: white;
+        padding: 2px 4px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+    }
+
+    </style>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready( function () {
+            // Get all existing Local AWS Profiles
+            var currProfiles =  '';
+            $.ajax({
+                        url: "/api/v1/aws/profile/all",
+                        type: "get",
+                    }).done(function (result) {
+                        profiles = result + "";
+                        console.log("==> Profiles List received : " + profiles);
+                        var profileArr = profiles.split(',');
+                        
+                        for (var i=0; i< profileArr.length; i++) {
+                            $('#awsProfile').append('<option value="' + profileArr[i] + '">' + profileArr[i] + '</option>');
+                        }
+                        
+                    }).fail(function (jqXHR, textStatus, errorThrown) { 
+                        console.log("Error while getting all profiles info : " + errorThrown);
+                    });
+
+    
+
+            // Draw a Table on Screen
+            var Table; 
+            Table = $("#servicesTable")
+            .on( 'draw.dt', function () {
+                console.log( 'Loading' );
+                // Here show the loader.
+                $("#MessageContainer").html("Loading ...");
+            })
+            .DataTable({
+                data:[],
+                columns: [
+                            { "data": "VPCID"  },
+                            { "data": "VPC" },
+                            { "data": "Service" },
+                            { "data": "ServiceId or ARN" },
+                            { "data": "Tag" },
+                            { "data": "Public IP" },
+                            { "data": "Private IP" },
+                ],
+                rowCallback: function (row, data) {},
+                filter: true,
+                info: true,
+                ordering: true,
+                processing: true,
+                retrieve: true        
+            });
+
+            
+            $("#btnGetAllServices2").on("click", function (event) {
+                console.log("==> User clicked ");
+            })
+
+            $("#btnGetAllServices").on("click", function (event) {
+                console.log("==> Startinng to get all services info ");
+                $("#btnGetAllServices").text('Loading ....');
+                $("#btnGetAllServices").css("background-color","grey");
+                $.ajax({
+                        url: "/api/v1/aws/services/all",
+                        type: "get",
+                    }).done(function (result) {
+                        console.log("==> Data received : " + result);
+                        Table.clear().draw();
+                        Table.rows.add(result).draw();
+
+                        // reset button
+                        $("#btnGetAllServices").text('Get All AWS Services');
+                        $("#btnGetAllServices").css("background-color","#4CAF50");
+
+                    }).fail(function (jqXHR, textStatus, errorThrown) { 
+                        console.log("Error while getting all services data : " + errorThrown);
+                    });
+                console.log("==> All Services Info received and table updated ");
+            });
+
+            $("#btnSetProfile").on("click", function (event) {
+                
+                var profileSelected = [$('#awsProfile').val()];
+                console.log("==> Starting to Set New Profile info " + profileSelected );
+               
+                $.ajax({
+                        url: "/api/v1/aws/profile/" + profileSelected,
+                        type: "POST",
+                        data: JSON.stringify(profileSelected)
+                    }).done(function (result) {
+                        console.log("==> Data received : " + result);
+                    
+                    }).fail(function (jqXHR, textStatus, errorThrown) { 
+                        console.log("Error while getting all services data : " + errorThrown);
+                    });
+                console.log("==> Setting up of Profile completed ");
+            });
+        
+        });
+    
+    </script>
+</head>
+<body>
+    <section class="pageheader">
+    <h1> AWS Content Inspector </h1>
+    
+    <div class="col-md-12 setProfile" style="text-align:right" >
+        <select id="awsProfile" name="awsProfile"></select>
+        <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
+    </div>
+    <hr>
+    </section>
+
+    
+    <section class="pageFilters">
+    <div class="col-md-12" style="text-align:right">
+        <button id="btnResetAll" name="btnResetAll" class="primary">Reset Cache</button>
+        <button id="btnGetAllServices" name="btnGetAllServices" class="primary">Get All AWS Services</button>
+    </div>
+    </section>
+    <section class="pageBody">
+    <div class="inspecttable">
+        <div id="messages"></div>
+        <table id="servicesTable" class="display compact" style="width:100%"> 
+            
+            <thead>
+                <th>VPCID</th>
+                <th>VPC</th>
+                <th>Service</th>
+                <th>ServiceId or ARN</th>
+                <th>Tag</th>
+                <th>Public IP</th>
+                <th>Private IP</th>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    </section>
+
+
+</body>
+</html>

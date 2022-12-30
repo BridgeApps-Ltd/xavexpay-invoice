@@ -1,0 +1,161 @@
+{
+    "vpc-0447958bb6de00629": {
+        "VPCID": "vpc-0447958bb6de00629",
+        "VPC": "Name:Name|Customer:Trent-Test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-01ba5b4970f9cfb19",
+        "Tag": "PRODUCTION1|Name:TRENT[TEST-UAT]",
+        "Public IP": "3.110.32.149",
+        "Private IP": "10.1.2.128"
+    },
+    "vpc-01a3e595918b2928c": {
+        "VPCID": "vpc-01a3e595918b2928c",
+        "VPC": "Name:Name|Customer:cargofl-Knorr-Bremse-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-00d5bc7d14b9b437c",
+        "Tag": "PRODUCTION1|Name:Knorr[Test-UAT]",
+        "Public IP": "52.66.76.235",
+        "Private IP": "10.8.12.201"
+    },
+    "vpc-0b19ff3a5d030e809": {
+        "VPCID": "vpc-0b19ff3a5d030e809",
+        "VPC": "Name:Name|Customer:cargofl-nourishco-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0c145e87e178cd341",
+        "Tag": "PRODUCTION1|Name:Nourishco[Test-UAT]",
+        "Public IP": "43.205.177.129",
+        "Private IP": "10.9.9.111"
+    },
+    "vpc-06ecb2bbfa783e4fc": {
+        "VPCID": "vpc-06ecb2bbfa783e4fc",
+        "VPC": "Name:Name|Customer:cargofl-schaeffler-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0227960bf796b0f80",
+        "Tag": "PRODUCTION1|Name:Schaeffler[DEV-UAT]",
+        "Public IP": "43.205.239.208",
+        "Private IP": "10.10.14.133"
+    },
+    "vpc-0f7166023f4929e08": {
+        "VPCID": "vpc-0f7166023f4929e08",
+        "VPC": "Name:Name|Customer:cargofl-puma-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-08120df35ba339792",
+        "Tag": "PRODUCTION1|Name:PUMA[TEST-UAT]",
+        "Public IP": "65.0.104.66",
+        "Private IP": "10.4.12.30"
+    },
+    "vpc-024d15c43691a844f": {
+        "VPCID": "vpc-024d15c43691a844f",
+        "VPC": "Name:Name|Customer:Threat-mapper-vpce-s3",
+        "Service": "s3"
+    },
+    "vpc-0d1772f510aba9154": {
+        "VPCID": "vpc-0d1772f510aba9154",
+        "VPC": "Name:Name|Customer:cargofl-posh-help-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-06f3c3e3b2ece3ac1",
+        "Tag": "PRODUCTION1|Name:Posh-Help-EV-New",
+        "Public IP": "13.235.23.211",
+        "Private IP": "10.12.7.90"
+    },
+    "vpc-0caaa8bf8b2df838c": {
+        "VPCID": "vpc-0caaa8bf8b2df838c",
+        "VPC": "Name:Name|Customer:cargofl-dtplus-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0ae54e0dd63119209",
+        "Tag": "PRODUCTION1|Name:DTPLUS-TEST",
+        "Public IP": "43.205.112.185",
+        "Private IP": "10.6.5.220"
+    },
+    "vpc-0ea486089d6406234": {
+        "VPCID": "vpc-0ea486089d6406234",
+        "VPC": "Name:Name|Customer:Cargofl-decathlon-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-00dc628a27572c27e",
+        "Tag": "PRODUCTION1|Name:Decathlon-UAT",
+        "Public IP": "35.154.113.131",
+        "Private IP": "10.12.19.11"
+    },
+    "vpc-0c3297a0582d9bea0": {
+        "VPCID": "vpc-0c3297a0582d9bea0",
+        "VPC": "VPC:aws:cloudformation:logical-id | Customer:Vpc",
+        "Service": "ec2"
+    },
+    "vpc-058a316bce9a37369": {
+        "VPCID": "vpc-058a316bce9a37369",
+        "VPC": "VPC:Name | Customer:CargoFL-Test",
+        "Service": "rds",
+        "Service Id/ARN": "arn:aws:rds:ap-south-1:765871903796:db:xwiki-docs",
+        "Tag": "xwiki-docs | test instance:",
+        "Public IP": "13.126.2.90",
+        "Private IP": "172.31.1.135"
+    },
+    "vpc-011fa3effd146700c": {
+        "VPCID": "vpc-011fa3effd146700c",
+        "VPC": "Name:Name|Customer:Cargofl-eas-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-021818cbbc1f1e3bc",
+        "Tag": "PRODUCTION1|Name:EAS-TEST",
+        "Public IP": "65.2.126.215",
+        "Private IP": "10.13.8.184"
+    },
+    "vpc-0fdc6ad3103a74ce9": {
+        "VPCID": "vpc-0fdc6ad3103a74ce9",
+        "VPC": "Name:Name|Customer:Cargofl-mamaearth-test-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-07244f388ad685702",
+        "Tag": "PRODUCTION1|Name:mamaearth-uat",
+        "Public IP": "15.207.89.128",
+        "Private IP": "10.11.16.123"
+    },
+    "vpc-0179efbacb1c7c8c8": {
+        "VPCID": "vpc-0179efbacb1c7c8c8",
+        "VPC": "Name:Name|Customer:cargofl-management-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0677982f3aa4bb294",
+        "Tag": "PRODUCTION1|Name:ELK For Logs",
+        "Public IP": "43.204.22.122",
+        "Private IP": "10.0.0.62"
+    },
+    "vpc-0ff2d264ebfbdfc5c": {
+        "VPCID": "vpc-0ff2d264ebfbdfc5c",
+        "VPC": "Name:Name|Customer:cargofl-ppap-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0044128dd8295b41c",
+        "Tag": "PRODUCTION1|Name:PPAP[TEST-UAT]",
+        "Public IP": "43.205.125.172",
+        "Private IP": "10.5.7.77"
+    },
+    "vpc-08d545bbb77ef58b2": {
+        "VPCID": "vpc-08d545bbb77ef58b2",
+        "VPC": "Name:Name|Customer:demo-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0b75156346eaf5959",
+        "Tag": "PRODUCTION1|Name:kafka",
+        "Public IP": "43.205.196.152",
+        "Private IP": "10.2.2.89"
+    },
+    "vpc-09e035f832cf097c0": {
+        "VPCID": "vpc-09e035f832cf097c0",
+        "VPC": "Name:Name|Customer:cargofl-ktc-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-0a1bde8ab26112053",
+        "Tag": "PRODUCTION1|Name:KTC-UAT",
+        "Public IP": "52.66.238.74",
+        "Private IP": "10.8.24.134"
+    },
+    "vpc-0332bedb285ae2598": {
+        "VPCID": "vpc-0332bedb285ae2598",
+        "VPC": "Name:Name|Customer:cargofl-mamaearth-test-vpce-s3",
+        "Service": "s3"
+    },
+    "vpc-084dc6fe4e56777f5": {
+        "VPCID": "vpc-084dc6fe4e56777f5",
+        "VPC": "Name:Name|Customer:cargofl-MT-vpce-s3",
+        "Service": "s3",
+        "Service Id/ARN": "i-05b45b421d45b0b06",
+        "Tag": "PRODUCTION1|Name:MT[TEST-UAT]",
+        "Public IP": "65.2.190.110",
+        "Private IP": "10.7.13.101"
+    }
+}

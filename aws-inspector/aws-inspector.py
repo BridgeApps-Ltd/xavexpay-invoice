@@ -388,6 +388,7 @@ def setAwsProfile(new_aws_profile):
 
 def processInstanceInfo(instance_id):
     instance_info = ec2.describe_instances(InstanceIds=[instance_id])
+    return instance_info
 
     # write code to read from the instance_info
     # and dump all the contents in any format - json or text

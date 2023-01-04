@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>AWS Content Inspector</title>
+    <title>AWS Content Inspector | BridgeApps Ltd</title>
     <link rel="icon" href="/static/BridgeApps-Logo-Only-300x300.png" sizes="192x192" />
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.jqueryui.min.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
@@ -19,6 +22,8 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js "></script>   
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
 
     <style>
     body {
@@ -32,6 +37,7 @@
         padding-top:5px;
         padding-bottom:10px;
         padding-left: 10px;
+        font-size: 20px;
     }
     .inspecttable {
         margin-top:30px;
@@ -43,6 +49,7 @@
         background-color:darkcyan;
     }
     .pageFilters {
+        font-family:'Courier New', Courier, monospace;
         font-size: 14px;
         size:20px;
     }
@@ -53,6 +60,7 @@
     }
     .primary{
         background-color: #4CAF50; /* Green */
+        font-family:'Courier New', Courier, monospace;
         border: none;
         color: white;
         padding: 10px 20px;
@@ -64,6 +72,20 @@
 
     .secondary{
         background-color: white; /* Green */
+        font-family:'Courier New', Courier, monospace;
+        border: solid 1px;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    
+    .another{
+        background-color:cadetblue; /* Green */
+        font-family:'Courier New', Courier, monospace;
         border: solid 1px;
         color: black;
         padding: 10px 20px;
@@ -79,6 +101,7 @@
        
     <script>
         $(document).ready( function () {
+
             // Get all existing Local AWS Profiles
             var currProfiles =  '';
             $.ajax({
@@ -99,58 +122,64 @@
 
     
 
-            // Draw a Table on Screen
-            var Table; 
-            Table = $("#servicesTable")
-            .on( 'draw.dt', function () {
-                console.log( 'Loading' );
-                // Here show the loader.
-                $("#MessageContainer").html("Loading ...");
-            })
-            .DataTable({
-                data:[],
-                dom: 'Bfrtip',
-                buttons: [
-                     'excel', 'pdf', 'print'
-                ],
-                iDisplayLength: -1,
-                columns: [
-                            { "data": "VPCID"  },
-                            { "data": "Service" },
-                            { "data": "ServiceId or ARN" },
-                            { "data": "Tag" },
-                            { "data": "Public IP" },
-                            { "data": "Private IP" },
-                ],
-                rowCallback: function (row, data) {},
-                filter: true,
-                info: true,
-                ordering: true,
-                processing: true,
-                retrieve: true        
+
+            $("#btnOpenAllNodes").on("click", function (event) {
+                 $("#contents_astree").jstree('open_all');
+                 $("#btnOpenAllNodes").hide();
+                 $("#btnCloseAllNodes").show();
             });
 
-            $("#btnGetAllServices").on("click", function (event) {
+            $("#btnCloseAllNodes").on("click", function (event) {
+                 $("#contents_astree").jstree('close_all');
+                 $("#btnCloseAllNodes").hide();
+                 $("#btnOpenAllNodes").show();
+            });
+            $("#btnCloseAllNodes").hide();
+            $("#btnOpenAllNodes").hide();
+
+            $("#btnGetAllServicesTree").on("click", function (event) {
                 console.log("==> Starting to get all services info ");
-                $("#btnGetAllServices").text('Loading ....');
-                $("#btnGetAllServices").css("background-color","grey");
+
+                $("#btnGetAllServicesTree").text('Loading ....');
+                $("#btnGetAllServicesTree").css("background-color","grey");
                 $.ajax({
-                        url: "/api/v1/aws/services/all",
+                        url: "/api/v1/aws/services/tree/all",
                         type: "get",
                     }).done(function (result) {
                         console.log("==> Data received : " + result);
-                        Table.clear().draw();
-                        Table.rows.add(result).draw();
+
+                        $('#contents_astree').jstree({ 'core' : {
+                            'data' : result
+                        } });
 
                         // reset button to same name
-                        $("#btnGetAllServices").text('Get All AWS Services');
-                        $("#btnGetAllServices").css("background-color","#4CAF50");
+                        $("#btnGetAllServicesTree").text('Get All AWS Services');
+                        $("#btnGetAllServicesTree").css("background-color","#4CAF50");
+
+                        $("#btnOpenAllNodes").show();
 
                     }).fail(function (jqXHR, textStatus, errorThrown) { 
                         console.log("Error while getting all services data : " + errorThrown);
                     });
                 console.log("==> All Services Info received and table updated ");
             });
+
+            $('#contents_astree').on("select_node.jstree", function (e, data) { 
+                var serviceInfo = getAwsServiceInfo(data.node.id);
+                // alert("node_id: " + $("#pageContent").html()); 
+            });
+
+            function getAwsServiceInfo(instance_id){
+                $.ajax({
+                        url: "/api/v1/aws/services/tree/" + instance_id,
+                        type: "get",
+                    }).done(function (result) {
+                        // return content to the HTML section 
+                        $("#pageContent").html(result);
+                    }).fail(function (jqXHR, textStatus, errorThrown) { 
+                        console.log("Error while getting data for instance id : " + errorThrown);
+                    });
+            }
 
             $("#btnResetAll").on("click", function (event) {
                 console.log("==> Startinng reset ");
@@ -195,46 +224,44 @@
 </head>
 <body>
 
+<div class="container-fluid">
+    <div class="row">
+        <section class="pageheader">
+        <h1> AWS Content Inspector </h1>
+        <!--
+        <div class="col-md-12 setProfile" style="text-align:right" >
+            <select id="awsProfile" name="awsProfile"></select>
+            <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
+        </div>
+        -->
+        <hr>
+        </section>
 
-    <section class="pageheader">
-    <h1> AWS Content Inspector </h1>
-    <!--
-    <div class="col-md-12 setProfile" style="text-align:right" >
-        <select id="awsProfile" name="awsProfile"></select>
-        <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
-    </div>
-    -->
-    <hr>
-    </section>
-
-    
-    <section class="pageFilters">
-    <div class="col-md-12" style="text-align:right">
-        <a href="/tree"><button id="btnGetAllServicesTree" name="btnGetAllServicesTree" class="secondary">Go to &lt; AWS Services as Tree View</button></a>
-        <button id="btnGetAllServices" name="btnGetAllServices" class="primary">Get All AWS Services</button>
-
-    </div>
-    </section>
-    <section class="pageBody">
-    <div class="inspecttable">
-        <div id="messages"></div>
-        <table id="servicesTable" class="display compact" style="width:100%"> 
+        
+        <section class="pageFilters col-md-12">
+        <div class="col-md-12" style="text-align:right">
+            <a href="/"><button id="btnGetAllServices" name="btnGetAllServices" class="secondary">Go to &lt; AWS Services</button></a>
+            <button id="btnGetAllServicesTree" name="btnGetAllServicesTree" class="primary">Get All AWS Services As Tree</button>
+            <button id="btnOpenAllNodes" name="btnOpenAllNodes" class="another">Open All Nodes</button>
+            <button id="btnCloseAllNodes" name="btnCloseAllNodes" class="another">Close All Nodes</button>
             
-            <thead>
-                <th>VPCID</th>
-                <th>VPC</th>
-                <th>Service</th>
-                <th>ServiceId or ARN</th>
-                <th>Tag</th>
-                <th>Public IP</th>
-                <th>Private IP</th>
-            </thead>
-            <tbody>
+        </div>
+        </section>
+        <section class="leftpanel col-md-4">
+            <div name="contents_astree" id="contents_astree">
 
-            </tbody>
-        </table>
+            </div>
+        </section>
+        <section class="pageBody col-md-8">
+            <div id="messages"></div>
+            <div class="pageContent" id="pageContent" name="pageContent">
+                Test Test
+                
+            </div>
+        </section>
     </div>
-    </section>
+</div>
+
 
 </body>
 </html>

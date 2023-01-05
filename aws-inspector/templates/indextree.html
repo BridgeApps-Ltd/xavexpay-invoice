@@ -7,10 +7,6 @@
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.jqueryui.min.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
@@ -21,9 +17,17 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js "></script>   
 
+    <!-- JS Tree -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+
+    <!-- JSON View-->
+    <link rel="stylesheet" href="https://rawgithub.com/yesmeck/jquery-jsonview/master/dist/jquery.jsonview.css" />
+    <script type="text/javascript" src="https://rawgithub.com/yesmeck/jquery-jsonview/master/dist/jquery.jsonview.js"></script>
 
     <style>
     body {
@@ -58,6 +62,15 @@
         padding-left: 10px;
         padding-right:10px;
     }
+    .leftpanel{
+        overflow-y: scroll;
+        height: 768px;
+    }
+
+    .pageContent{
+        background-color: beige;
+    }
+
     .primary{
         background-color: #4CAF50; /* Green */
         font-family:'Courier New', Courier, monospace;
@@ -164,22 +177,32 @@
                 console.log("==> All Services Info received and table updated ");
             });
 
+            // Event: on click of JSON tree node.
             $('#contents_astree').on("select_node.jstree", function (e, data) { 
+                console.log("==>> JSON tree node clicked with id = " + data.node.id);
                 var serviceInfo = getAwsServiceInfo(data.node.id);
-                // alert("node_id: " + $("#pageContent").html()); 
+
             });
 
             function getAwsServiceInfo(instance_id){
+                var url = "/api/v1/aws/services/tree/" + instance_id;
+                console.log("==>> calling API : " + url);
                 $.ajax({
-                        url: "/api/v1/aws/services/tree/" + instance_id,
+                        url: url,
                         type: "get",
                     }).done(function (result) {
                         // return content to the HTML section 
-                        $("#pageContent").html(result);
+                        console.log("==>> API result : "+ JSON.stringify(result));
+                        $("#pageContent").html(JSON.stringify(result));
+                        $('#pageContent').JSONView($("#pageContent").html());
+
                     }).fail(function (jqXHR, textStatus, errorThrown) { 
                         console.log("Error while getting data for instance id : " + errorThrown);
                     });
             }
+
+            
+  
 
             $("#btnResetAll").on("click", function (event) {
                 console.log("==> Startinng reset ");
@@ -255,7 +278,7 @@
         <section class="pageBody col-md-8">
             <div id="messages"></div>
             <div class="pageContent" id="pageContent" name="pageContent">
-                Test Test
+                Select Instance on the tree to view Instance Specific Details !
                 
             </div>
         </section>

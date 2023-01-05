@@ -1,3 +1,4 @@
+from re import I
 import socket
 import boto3
 import pandas as pd
@@ -137,9 +138,16 @@ def describeEC2AsTree():
             pub_ip = data2["PublicDnsName"]
             kname = data2["KeyName"]
             vpc_id = data2['VpcId']
+
+            subnetid = data2["NetworkInterfaces"][0]["SubnetId"]
+            secgroupname = data2["NetworkInterfaces"][0]["Groups"][0]["GroupName"]
+            cpu_arch=data2["Architecture"]
+            instance_type=data2["InstanceType"]
+            ami_image = data2["ImageId"]
+
             ip_address_public = socket.gethostbyname(pub_ip)
             ec2_ds = {
-                "id" : instance_id,
+                "id" : "ec2-" +instance_id,
                 "parent": "ec2-" + vpc_id
             }
 
@@ -152,12 +160,36 @@ def describeEC2AsTree():
             ec2_json.append(ec2_ds)
 
             # Add a detail line per System
-            ec2_detail_ds = {
-                "id" : instance_id +"-"+ instance_id,
-                "parent": instance_id,
-                "text" : ip_address_public + " ( " + ip + " ) "
+            ec2_detail_ds1 = {
+                "id" : "ec2-" +instance_id +"-"+ instance_id+"1",
+                "parent": "ec2-" +instance_id,
+                "text" : "IP: " +  ip_address_public + " ( " + ip + " ) "
             }
-            ec2_json.append(ec2_detail_ds)
+            ec2_json.append(ec2_detail_ds1)
+
+            # Add sec group
+            ec2_detail_ds2 = {
+                "id" : "ec2-" +instance_id +"-"+ instance_id + "2",
+                "parent":"ec2-" + instance_id,
+                "text" : "SecurityGroup: " + secgroupname
+            }
+            ec2_json.append(ec2_detail_ds2)
+
+            # Add subnet 
+            ec2_detail_ds3 = {
+                "id" : "ec2-" +instance_id +"-"+ instance_id + "3",
+                "parent": "ec2-" +instance_id,
+                "text" : "SubnetID: " + subnetid
+            }
+            ec2_json.append(ec2_detail_ds3)
+
+            # Add subnet 
+            ec2_detail_ds4 = {
+                "id" : "ec2-" + instance_id +"-"+ instance_id + "4",
+                "parent": "ec2-" +instance_id,
+                "text" : "System: " + instance_type + "(" + cpu_arch + ") | AMI: " + ami_image
+            }
+            ec2_json.append(ec2_detail_ds4)
 
     return ec2_json
 
@@ -196,18 +228,25 @@ def describeRDSAsTree():
         arn = data['DBInstanceArn']
 
         rds_ds = {
-                "id" : instance_id,
-                "parent": "rds-" + vpcid
+                "id" : "rds-"+instance_id,
+                "parent": "rds-" + vpcid,
+                 "text" : "DBServerName: " + instance_id
             }
 
         for tags in taglist:
             key = tags['Key']
             value = tags['Value']
-            rds_ds ["text"] = f'{arn} | {value} | {instance_id}'
+            rds_ds ["text"] = rds_ds ["text"] + "|" + value
 
         rds_json.append(rds_ds)
 
-        print(rds_json)
+        # Add DB Detail
+        rds_detail_ds2 = {
+            "id" : "rds-" + instance_id + "2",
+            "parent": "rds-"+instance_id,
+            "text" : "ARN: " + arn
+        }
+        rds_json.append(rds_detail_ds2)
 
     return rds_json
     
@@ -387,7 +426,16 @@ def setAwsProfile(new_aws_profile):
 
 
 def processInstanceInfo(instance_id):
-    instance_info = ec2.describe_instances(InstanceIds=[instance_id])
+    if (instance_id.startswith('ec2-')):
+        # EC2 Instance
+        instance_id = instance_id.removeprefix('ec2-')
+        instance_info = ec2.describe_instances(InstanceIds=[instance_id])
+    elif (instance_id.startswith('rds-')):
+        instance_id = instance_id.removeprefix('rds-')
+        instance_info = rds.describe_db_instances(DBInstanceIdentifier=instance_id)
+    else:
+        instance_info = "No information is retrieved for this AWS Service type"
+
     return instance_info
 
     # write code to read from the instance_info
@@ -486,6 +534,10 @@ Either print AWS Assets as a CSV or to get data to UI as JSON\n")
         printOutToFile(args['outputpath'])
 
     print("... Data collection completed")
+
+
+def main2():
+    describeEC2AsTree()
 
 if __name__ == "__main__":
     main()

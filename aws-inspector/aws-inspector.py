@@ -12,9 +12,12 @@ warnings.filterwarnings("ignore")
 
 args = {}
 
-ec2 = boto3.client('ec2')
-rds = boto3.client('rds')
-s3 = boto3.client('s3')
+# ec2 = boto3.client('ec2')
+# rds = boto3.client('rds')
+# s3 = boto3.client('s3')
+
+global ec2, rds, s3
+
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -421,7 +424,13 @@ def getCurrentAwsProfile():
 
 def setAwsProfile(new_aws_profile):
     print ('Setting up new session to = ' + new_aws_profile)
-    boto3.session.Session(profile_name=new_aws_profile)
+    os.environ["AWS_DEFAULT_PROFILE"] = new_aws_profile
+
+    # Initialize with new profile
+    ec2 = boto3.client('ec2')
+    rds = boto3.client('rds')
+    s3 = boto3.client('s3')
+
     print('Current Session set as = '+ boto3.session.Session().profile_name)
 
 
@@ -434,7 +443,7 @@ def processInstanceInfo(instance_id):
         instance_id = instance_id.removeprefix('rds-')
         instance_info = rds.describe_db_instances(DBInstanceIdentifier=instance_id)
     else:
-        instance_info = "No information is retrieved for this AWS Service type"
+        instance_info = "No information is retrieved for this AWS Service type" 
 
     return instance_info
 
@@ -516,6 +525,10 @@ def collectInputs():
 def main():
     print("\nUse this service to Inspect all assets in an AWS Account. \
 Either print AWS Assets as a CSV or to get data to UI as JSON\n")
+
+    # Initialize default profile
+    all_aws_profiles = getAllAwsProfiles()
+    setAwsProfile(all_aws_profiles[0])
 
     # Collect User inputs
     args = collectInputs()

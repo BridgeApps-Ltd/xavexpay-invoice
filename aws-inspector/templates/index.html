@@ -90,7 +90,7 @@
                         var profileArr = profiles.split(',');
                         
                         for (var i=0; i< profileArr.length; i++) {
-                            $('#awsProfile').append('<option value="' + profileArr[i] + '">' + profileArr[i] + '</option>');
+                            $('#selectAwsProfile').append('<option value="' + profileArr[i] + '">' + profileArr[i] + '</option>');
                         }
                         
                     }).fail(function (jqXHR, textStatus, errorThrown) { 
@@ -173,7 +173,7 @@
 
             $("#btnSetProfile").on("click", function (event) {
                 
-                var profileSelected = [$('#awsProfile').val()];
+                var profileSelected = [$('#selectAwsProfile').val()];
                 console.log("==> Starting to Set New Profile info " + profileSelected );
                
                 $.ajax({
@@ -198,12 +198,12 @@
 
     <section class="pageheader">
     <h1> AWS Content Inspector </h1>
-    <!--
+
     <div class="col-md-12 setProfile" style="text-align:right" >
-        <select id="awsProfile" name="awsProfile"></select>
+        <select id="selectAwsProfile" name="selectAwsProfile" class="secondary"></select>
         <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
     </div>
-    -->
+
     <hr>
     </section>
 
@@ -222,7 +222,6 @@
             
             <thead>
                 <th>VPCID</th>
-                <th>VPC</th>
                 <th>Service</th>
                 <th>ServiceId or ARN</th>
                 <th>Tag</th>

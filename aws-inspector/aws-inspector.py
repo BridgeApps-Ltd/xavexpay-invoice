@@ -16,7 +16,7 @@ args = {}
 # rds = boto3.client('rds')
 # s3 = boto3.client('s3')
 
-global ec2, rds, s3
+
 
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
@@ -423,8 +423,12 @@ def getCurrentAwsProfile():
     return boto3.session.Session().profile_name
 
 def setAwsProfile(new_aws_profile):
+    global ec2, rds, s3
+
     print ('Setting up new session to = ' + new_aws_profile)
     os.environ["AWS_DEFAULT_PROFILE"] = new_aws_profile
+
+    boto3.setup_default_session(profile_name=new_aws_profile)
 
     # Initialize with new profile
     ec2 = boto3.client('ec2')
@@ -432,6 +436,8 @@ def setAwsProfile(new_aws_profile):
     s3 = boto3.client('s3')
 
     print('Current Session set as = '+ boto3.session.Session().profile_name)
+
+    return "Successfully set profile to : " + new_aws_profile
 
 
 def processInstanceInfo(instance_id):
@@ -497,8 +503,8 @@ def api_reset_contents():
 
 @app.route('/api/v1/aws/profile/<profile_name>', methods=['POST'])
 def api_set_new_aws_profile(profile_name):
-    setAwsProfile(profile_name)
-    return "Success: New Profile set : "
+    status = setAwsProfile(profile_name)
+    return status
 
 @app.route('/api/v1/aws/profile/<profile_name>', methods=['GET'])
 def api_list_aws_profiles(profile_name):
@@ -508,7 +514,11 @@ def api_list_aws_profiles(profile_name):
         return all_aws_profiles
     else:
         return 'Error: no profile mentioned'
-        
+
+@app.route('/api/v1/aws/profile', methods=['GET'])
+def api_get_current_aws_profile():
+    return getCurrentAwsProfile()
+                
 
 # ---------------------------------------------------------
 

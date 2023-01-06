@@ -1,0 +1,82 @@
+body {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 12px;
+    margin:0px;
+    padding:0px;
+    width:100%;
+}
+h1 {
+    padding-top:5px;
+    padding-bottom:10px;
+    padding-left: 10px;
+}
+.inspecttable {
+    margin-top:30px;
+}
+.setProfile {
+    size:20px;
+}
+.pageHeader {
+    background-color:darkcyan;
+}
+.pageFilters {
+    font-size: 14px;
+    size:20px;
+    margin-top: 10px;
+}
+.pageBody {
+    font-size: 12px;
+    padding-left: 10px;
+    padding-right:10px;
+
+}
+.leftpanel{
+    overflow-y: scroll;
+    height: 768px;
+}
+
+.pageContent{
+    background-color: beige;
+}
+.primary{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.secondary{
+    background-color: white; /* Green */
+    border: solid 1px;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.another{
+    background-color:cadetblue; /* Green */
+    font-family:'Courier New', Courier, monospace;
+    border: solid 1px;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#currentAwsProfile{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#messages{
+    background-color:#4CAF50; 
+    padding:10px;
+}

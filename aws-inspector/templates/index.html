@@ -3,11 +3,15 @@
     <title>AWS Content Inspector</title>
     <link rel="icon" href="/static/BridgeApps-Logo-Only-300x300.png" sizes="192x192" />
 
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.jqueryui.min.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+    <script src="/static/inspector.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
@@ -20,115 +24,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
-    <style>
-    body {
-        font-family:'Courier New', Courier, monospace;
-        font-size: 12px;
-        margin:0px;
-        padding:0px;
-        width:100%;
-    }
-    h1 {
-        padding-top:5px;
-        padding-bottom:10px;
-        padding-left: 10px;
-    }
-    .inspecttable {
-        margin-top:30px;
-    }
-    .setProfile {
-        size:20px;
-    }
-    .pageHeader {
-        background-color:darkcyan;
-    }
-    .pageFilters {
-        font-size: 14px;
-        size:20px;
-    }
-    .pageBody {
-        font-size: 12px;
-        padding-left: 10px;
-        padding-right:10px;
-    }
-    .primary{
-        background-color: #4CAF50; /* Green */
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-    }
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
 
-    .secondary{
-        background-color: white; /* Green */
-        border: solid 1px;
-        color: black;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-    }
-
-    </style>
-
-
-       
     <script>
         $(document).ready( function () {
-            // Get all existing Local AWS Profiles
-            var currProfiles =  '';
-            $.ajax({
-                        url: "/api/v1/aws/profile/all",
-                        type: "get",
-                    }).done(function (result) {
-                        profiles = result + "";
-                        console.log("==> Profiles List received : " + profiles);
-                        var profileArr = profiles.split(',');
-                        
-                        for (var i=0; i< profileArr.length; i++) {
-                            $('#selectAwsProfile').append('<option value="' + profileArr[i] + '">' + profileArr[i] + '</option>');
-                        }
-                        
-                    }).fail(function (jqXHR, textStatus, errorThrown) { 
-                        console.log("Error while getting all profiles info : " + errorThrown);
-                    });
 
-    
-
-            // Draw a Table on Screen
-            var Table; 
-            Table = $("#servicesTable")
-            .on( 'draw.dt', function () {
-                console.log( 'Loading' );
-                // Here show the loader.
-                $("#MessageContainer").html("Loading ...");
-            })
-            .DataTable({
-                data:[],
-                dom: 'Bfrtip',
-                buttons: [
-                     'excel', 'pdf', 'print'
-                ],
-                iDisplayLength: -1,
-                columns: [
-                            { "data": "VPCID"  },
-                            { "data": "Service" },
-                            { "data": "ServiceId or ARN" },
-                            { "data": "Tag" },
-                            { "data": "Public IP" },
-                            { "data": "Private IP" },
-                ],
-                rowCallback: function (row, data) {},
-                filter: true,
-                info: true,
-                ordering: true,
-                processing: true,
-                retrieve: true        
-            });
 
             $("#btnGetAllServices").on("click", function (event) {
                 console.log("==> Starting to get all services info ");
@@ -182,58 +84,68 @@
                         data: JSON.stringify(profileSelected)
                     }).done(function (result) {
                         console.log("==> Data received : " + result);
-                    
+                        showMessage(result);
+                        getCurrentProfile();
                     }).fail(function (jqXHR, textStatus, errorThrown) { 
                         console.log("Error while getting all services data : " + errorThrown);
                     });
                 console.log("==> Setting up of Profile completed ");
             });
-        
+
+
+
+            getAllAwsProfiles();
+            getCurrentProfile();    
+            drawTableOnScreen();
+            $('#messages').hide();
         });
     
     </script>
 </head>
 <body>
+    <div class="container-fluid">
+        <div class="row">
+            <section class="pageheader">
+                <h1>AWS Content Inspector </h1>
+                <div class="row">
+                    <div class="col-md-4"> Current AWS profile: <span id="currentAwsProfile"></span></div>
+                    <div class="col-md-8 setProfile" style="text-align:right" >
+                        <select id="selectAwsProfile" name="selectAwsProfile" class="secondary"></select>
+                        <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
+                    </div>
+                </div>
+            </section>
 
-
-    <section class="pageheader">
-    <h1> AWS Content Inspector </h1>
-
-    <div class="col-md-12 setProfile" style="text-align:right" >
-        <select id="selectAwsProfile" name="selectAwsProfile" class="secondary"></select>
-        <button id="btnSetProfile" name="btnSetProfile"  class="secondary"> Set Current Profile</button>
-    </div>
-
-    <hr>
-    </section>
-
-    
-    <section class="pageFilters">
-    <div class="col-md-12" style="text-align:right">
-        <a href="/tree"><button id="btnGetAllServicesTree" name="btnGetAllServicesTree" class="secondary">Go to &lt; AWS Services as Tree View</button></a>
-        <button id="btnGetAllServices" name="btnGetAllServices" class="primary">Get All AWS Services</button>
-
-    </div>
-    </section>
-    <section class="pageBody">
-    <div class="inspecttable">
-        <div id="messages"></div>
-        <table id="servicesTable" class="display compact" style="width:100%"> 
+            <div id="messages" class="col-md-12"></div>
             
-            <thead>
-                <th>VPCID</th>
-                <th>Service</th>
-                <th>ServiceId or ARN</th>
-                <th>Tag</th>
-                <th>Public IP</th>
-                <th>Private IP</th>
-            </thead>
-            <tbody>
+            <section class="pageFilters">
+            <div class="col-md-12" style="text-align:right">
+                <a href="/tree"><button id="btnGetAllServicesTree" name="btnGetAllServicesTree" class="secondary">Go to &lt; AWS Services as Tree View</button></a>
+                <button id="btnGetAllServices" name="btnGetAllServices" class="primary">Get All AWS Services</button>
 
-            </tbody>
-        </table>
+            </div>
+            </section>
+            <section class="pageBody">
+            <div class="inspecttable">
+                <table id="servicesTable" class="display compact" style="width:100%"> 
+                    
+                    <thead>
+                        <th>VPCID</th>
+                        <th>Service</th>
+                        <th>ServiceId or ARN</th>
+                        <th>Tag</th>
+                        <th>Public IP</th>
+                        <th>Private IP</th>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            </section>
+
+        </div>
     </div>
-    </section>
 
 </body>
 </html>

@@ -131,6 +131,8 @@ class AWSInspector:
 
                 subnetid = data2["NetworkInterfaces"][0]["SubnetId"]
                 secgroupname = data2["NetworkInterfaces"][0]["Groups"][0]["GroupName"]
+                secgroupid = data2["NetworkInterfaces"][0]["Groups"][0]["GroupId"]
+
                 cpu_arch=data2["Architecture"]
                 instance_type=data2["InstanceType"]
                 ami_image = data2["ImageId"]
@@ -146,22 +148,24 @@ class AWSInspector:
                 for tagss in tag_ec2:
                     key_ec2 = tagss['Key']
                     value_ec2 = tagss['Value']
-                    ec2_ds ["text"] = f"{kname} | {value_ec2} | {instance_id}"
+                    ec2_ds ["text"] = f"{kname} | {value_ec2} | {instance_id} " + "(link)"
                 ec2_json.append(ec2_ds)
 
                 # Add a detail line per System
                 ec2_detail_ds1 = {
                     "id" : "ec2-" +instance_id +"-"+ instance_id+"1",
                     "parent": "ec2-" +instance_id,
-                    "text" : "IP: " +  ip_address_public + " ( " + ip + " ) "
+                    "text" : "IP: " +  ip_address_public + " ( " + ip + " ) ",
+                    "type" : "element"
                 }
                 ec2_json.append(ec2_detail_ds1)
 
                 # Add sec group
                 ec2_detail_ds2 = {
-                    "id" : "ec2-" +instance_id +"-"+ instance_id + "2",
+                    "id" : secgroupid+"--"+instance_id,
                     "parent":"ec2-" + instance_id,
-                    "text" : "SecurityGroup: " + secgroupname
+                    "text" : "SecurityGroup: " + secgroupname,
+                    "type" : "element"
                 }
                 ec2_json.append(ec2_detail_ds2)
 
@@ -169,7 +173,8 @@ class AWSInspector:
                 ec2_detail_ds3 = {
                     "id" : "ec2-" +instance_id +"-"+ instance_id + "3",
                     "parent": "ec2-" +instance_id,
-                    "text" : "SubnetID: " + subnetid
+                    "text" : "SubnetID: " + subnetid,
+                    "type" : "element"
                 }
                 ec2_json.append(ec2_detail_ds3)
 
@@ -177,9 +182,19 @@ class AWSInspector:
                 ec2_detail_ds4 = {
                     "id" : "ec2-" + instance_id +"-"+ instance_id + "4",
                     "parent": "ec2-" +instance_id,
-                    "text" : "System: " + instance_type + "(" + cpu_arch + ") | AMI: " + ami_image
+                    "text" : "System: " + instance_type + " (" + cpu_arch + ") | AMI: " + ami_image,
+                    "type" : "element"
                 }
                 ec2_json.append(ec2_detail_ds4)
+
+                 # Add subnet 
+                ec2_detail_ds5 = {
+                    "id" : "logs-"+pub_ip,
+                    "parent": "ec2-" +instance_id,
+                    "text" : "View Server Logs (link)" ,
+                    "type" : "element"
+                }
+                ec2_json.append(ec2_detail_ds5)
 
         return ec2_json
 
@@ -220,7 +235,7 @@ class AWSInspector:
             rds_ds = {
                     "id" : "rds-"+instance_id,
                     "parent": "rds-" + vpcid,
-                    "text" : "DBServerName: " + instance_id
+                    "text" : "DBServerName: " + instance_id  + "(link)"
                 }
 
             for tags in taglist:

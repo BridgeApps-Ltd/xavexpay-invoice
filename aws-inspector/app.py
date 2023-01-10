@@ -5,7 +5,7 @@ import pandas as pd
 import json
 import os
 import argparse
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -36,8 +36,17 @@ def process_instance_info(instance_id):
         instance_id = instance_id.removeprefix('ec2-')
         instance_info = aws_inspector.ec2.describe_instances(InstanceIds=[instance_id])
     elif (instance_id.startswith('rds-')):
+        # rds
         instance_id = instance_id.removeprefix('rds-')
         instance_info = aws_inspector.rds.describe_db_instances(DBInstanceIdentifier=instance_id)
+    elif (instance_id.startswith('sg-')):
+        # security group
+        instance_id = instance_id.split('--',1)[0] # remove ec2 instanceid after --
+        instance_info = aws_inspector.ec2.describe_security_groups(GroupIds=[instance_id])
+    elif (instance_id.startswith('logs-')):
+        # security group
+        instance_id = instance_id.removeprefix('logs-')
+        instance_info = '<a href=redirect_to_url/'+ instance_id + ' target=_blank>"View Logs</a>'
     else:
         instance_info = "No information is retrieved for this AWS Service type" 
 
@@ -72,6 +81,11 @@ def get_current_aws_profile():
 @app.route('/', methods=['GET'])
 def page_home():
    return render_template('index.html')
+
+@app.route('/redirect_to_url/<url_to_redirect>', methods=['GET'])
+def page_redirect_to_url(url_to_redirect):
+    return redirect("http://" + url_to_redirect, code=302)
+
 
 @app.route('/tree', methods=['GET'])
 def page_home_tree():

@@ -1,5 +1,4 @@
-WINDOWS script to inject proxy config in Internet Settings
----------------------------------------------
+REM WINDOWS script to inject proxy config in Internet Settings
 
 @echo off
 set username=<add proxy username>

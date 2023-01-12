@@ -66,7 +66,7 @@
                         } });
 
                         // reset button to same name
-                        $("#btnGetAllServicesTree").text('Get All AWS Services');
+                        $("#btnGetAllServicesTree").text('Get All AWS Services As Tree');
                         $("#btnGetAllServicesTree").css("background-color","#4CAF50");
 
                         $("#btnOpenAllNodes").show();
@@ -133,6 +133,7 @@
                         console.log("==> Data received : " + result);
                         showMessage(result);
                         getCurrentProfile();
+                        location.reload(); // reload page after profile change
                     }).fail(function (jqXHR, textStatus, errorThrown) { 
                         console.log("Error while getting all services data : " + errorThrown);
                     });
@@ -162,11 +163,16 @@
             </div>
         </section>
 
+        <section class="menutree">
+            <div class="col-md-12 menubar" style="text-align:left" >
+                <span><a href="/">Services as Table</a></span> <span> | <a href="/tree">Services as Tree</a></span> 
+            </div>
+        </section>
+
         <div id="messages" class="col-md-12"></div>
 
         <section class="pageFilters col-md-12">
         <div class="col-md-12" style="text-align:right">
-            <a href="/"><button id="btnGetAllServices" name="btnGetAllServices" class="secondary">Go to &lt; AWS Services</button></a>
             <button id="btnGetAllServicesTree" name="btnGetAllServicesTree" class="primary">Get All AWS Services As Tree</button>
             <button id="btnOpenAllNodes" name="btnOpenAllNodes" class="another">Open All Nodes</button>
             <button id="btnCloseAllNodes" name="btnCloseAllNodes" class="another">Close All Nodes</button>

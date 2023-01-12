@@ -52,7 +52,6 @@ def process_instance_info(instance_id):
 
     return instance_info
 
-
 def merge_all_data(ec2_json, rds_json, s3_json):
     ec2_df = pd.DataFrame(ec2_json)
     s3_df = pd.DataFrame(s3_json)
@@ -71,12 +70,10 @@ def set_aws_profile(new_aws_profile):
     #os.environ["AWS_DEFAULT_PROFILE"] = new_aws_profile
     global aws_inspector
     aws_inspector = AWSInspector(profile_name=new_aws_profile)
-    print(f'Current Session set as = {aws_inspector.current_profle}')
+    print(f'==>> Current Session set as = {aws_inspector.current_profle}')
 
     return "Successfully set profile to : " + new_aws_profile
 
-def get_current_aws_profile():
-    return boto3.session.Session().profile_name
 
 @app.route('/', methods=['GET'])
 def page_home():
@@ -130,6 +127,9 @@ def api_get_current_aws_profile():
     return get_current_aws_profile()
 
 
+def get_current_aws_profile():
+    return aws_inspector.get_current_profile()
+    
 def parse_inputs():
     parser = argparse.ArgumentParser("aws-inspector")
     parser.add_argument('-o','--output', help="Output. Options - web | file. Default file content format is JSON", type=str, default='web', required=True)

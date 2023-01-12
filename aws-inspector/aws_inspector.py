@@ -19,6 +19,8 @@ class AWSInspector:
     def current_profle(self):
         return boto3.session.Session().profile_name
 
+    def get_current_profile(self):
+        return self.profile_name
 
     def describe_vpcs(self):
         vpc_json = []
@@ -148,7 +150,7 @@ class AWSInspector:
                 for tagss in tag_ec2:
                     key_ec2 = tagss['Key']
                     value_ec2 = tagss['Value']
-                    ec2_ds ["text"] = f"{kname} | {value_ec2} | {instance_id} " + "(link)"
+                    ec2_ds ["text"] = f"{kname} | {value_ec2} | {instance_id} " + " (link)"
                 ec2_json.append(ec2_ds)
 
                 # Add a detail line per System
@@ -164,7 +166,7 @@ class AWSInspector:
                 ec2_detail_ds2 = {
                     "id" : secgroupid+"--"+instance_id,
                     "parent":"ec2-" + instance_id,
-                    "text" : "SecurityGroup: " + secgroupname,
+                    "text" : "SecurityGroup: " + secgroupname  + " (link)",
                     "type" : "element"
                 }
                 ec2_json.append(ec2_detail_ds2)

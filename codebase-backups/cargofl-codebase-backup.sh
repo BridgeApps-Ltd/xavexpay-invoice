@@ -112,4 +112,5 @@ uploads3() {
 # Call the function with the path to the compressed file and S3 bucket name as arguments
 uploads3 "/opt/archive/$GIT_FOLDER_NAME.zip.gz" "$S3_BUCKET"
 
+#removing git folder
 rm -rf /root/$GIT_FOLDER_NAME

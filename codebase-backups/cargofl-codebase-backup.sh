@@ -1,4 +1,4 @@
-#!/bin/bashh
+#!/bin/bash
 
 # uplaod to platform-scripts in bridgeapps github codebase
 for i in `cat codebase-list.ini` do

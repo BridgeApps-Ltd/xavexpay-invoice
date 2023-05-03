@@ -5,7 +5,7 @@ S3_BUCKET="$S3_BUCKET"
 REPOSITORY_URL="$REPOSITORY_URL"
 GIT_FOLDER_NAME="$GIT_FOLDER_NAME"
 CURRENT_DATE=$(date +%Y-%m-%d)
-ARCHIVE_PATH="/opt/archive"
+ARCHIVE_PATH="$ARCHIVE_PATH"
 
 # function to upload file to s3 bucket
 restorefroms3() {

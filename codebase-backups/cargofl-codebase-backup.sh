@@ -100,10 +100,7 @@ uploads3() {
       echo "Error: S3 bucket name is missing."
       return 1
   fi
-
-  # Get the current date in the format "YYYY-MM-DD"
-  current_date=$(date +%Y-%m-%d)
-
+  
   # Upload the compressed file to S3
   aws s3 cp "$1" "s3://$2/$3/"
 

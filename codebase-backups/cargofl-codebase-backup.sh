@@ -4,6 +4,7 @@ source config.ini
 S3_BUCKET="$S3_BUCKET"
 REPOSITORY_URL="$REPOSITORY_URL"
 GIT_FOLDER_NAME="$GIT_FOLDER_NAME"
+CURRENT_DATE=$(date +%Y-%m-%d)
 
 #cleaning old compressed file
 rm /opt/archive/$GIT_FOLDER_NAME.zip.gz
@@ -104,13 +105,13 @@ uploads3() {
   current_date=$(date +%Y-%m-%d)
 
   # Upload the compressed file to S3
-  aws s3 cp "$1" "s3://$2/$current_date/"
+  aws s3 cp "$1" "s3://$2/$3/"
 
   return 0
 }
 
 # Call the function with the path to the compressed file and S3 bucket name as arguments
-uploads3 "/opt/archive/$GIT_FOLDER_NAME.zip.gz" "$S3_BUCKET"
+uploads3 "/opt/archive/$GIT_FOLDER_NAME.zip.gz" "$S3_BUCKET" "$CURRENT_DATE"
 
 #removing git folder
 rm -rf /root/$GIT_FOLDER_NAME

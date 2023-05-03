@@ -4,6 +4,7 @@ source config.ini
 S3_BUCKET="$S3_BUCKET"
 REPOSITORY_URL="$REPOSITORY_URL"
 GIT_FOLDER_NAME="$GIT_FOLDER_NAME"
+CURRENT_DATE=$(date +%Y-%m-%d)
 
 # function to upload file to s3 bucket
 restorefroms3() {
@@ -21,14 +22,11 @@ restorefroms3() {
       return 1
   fi
 
-  # Get the current date in the format "YYYY-MM-DD"
-  current_date=$(date +%Y-%m-%d)
-
   # Upload the compressed file to S3
-  aws s3 cp "s3://$2/$current_date/cargofl.zip.gz" "$1"
+  aws s3 cp "s3://$2/$3/cargofl.zip.gz" "$1"
 
   return 0
 }
 
 # Call the function with the path to the compressed file and S3 bucket name as arguments
-restorefroms3 "/opt/archive/cargofl.zip.gz" "$S3_BUCKET"
+restorefroms3 "/opt/archive/cargofl.zip.gz" "$S3_BUCKET" "$CURRENT_DATE"

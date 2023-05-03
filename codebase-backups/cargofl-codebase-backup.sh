@@ -5,9 +5,10 @@ S3_BUCKET="$S3_BUCKET"
 REPOSITORY_URL="$REPOSITORY_URL"
 GIT_FOLDER_NAME="$GIT_FOLDER_NAME"
 CURRENT_DATE=$(date +%Y-%m-%d)
+ARCHIVE_PATH="/opt/archive"
 
 #cleaning old compressed file
-rm /opt/archive/$GIT_FOLDER_NAME.zip.gz
+rm $ARCHIVE_PATH/$GIT_FOLDER_NAME.zip.gz
 
 # Function to clone/download a github repository
 downloadcodebase() {
@@ -76,7 +77,7 @@ createzip() {
 }
 
 # Call the function with the GitHub repository directory and destination directory as arguments
-createzip "$GIT_FOLDER_NAME" "/opt/archive/"
+createzip "$GIT_FOLDER_NAME" "$ARCHIVE_PATH"
 
 # function to upload file to s3 bucket
 uploads3() {
@@ -108,7 +109,7 @@ uploads3() {
 }
 
 # Call the function with the path to the compressed file and S3 bucket name as arguments
-uploads3 "/opt/archive/$GIT_FOLDER_NAME.zip.gz" "$S3_BUCKET" "$CURRENT_DATE"
+uploads3 "$ARCHIVE_PATH/$GIT_FOLDER_NAME.zip.gz" "$S3_BUCKET" "$CURRENT_DATE"
 
 #removing git folder
 rm -rf /root/$GIT_FOLDER_NAME

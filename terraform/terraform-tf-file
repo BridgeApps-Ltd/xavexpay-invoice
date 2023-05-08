@@ -1,0 +1,98 @@
+provider "aws" {
+  access_key = "AKIA3EUMF2Q2CLWWEARO"
+  secret_key = "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"
+  region     = "ap-south-1"
+}
+
+variable "vpc_ids" {
+  type = map(string)
+  default = {
+        vpc1 ="vpc-01a3e595918b2928c"
+        vpc2 = "vpc-0447958bb6de00629"
+        vpc3 = "vpc-06ecb2bbfa783e4fc"
+        vpc4 = "vpc-0b19ff3a5d030e809"
+        vpc5 = "vpc-0f7166023f4929e08"
+        vpc6 = "vpc-0caaa8bf8b2df838c"
+        vpc7 = "vpc-0d1772f510aba9154"
+        vpc8 = "vpc-0c3297a0582d9bea0"
+        vpc9 = "vpc-0ea486089d6406234"
+        vpc10 = "vpc-058a316bce9a37369"
+        vpc11 = "vpc-011fa3effd146700c"
+        vpc12 = "vpc-062eec925075d6131"
+        vpc13 = "vpc-0fdc6ad3103a74ce9"
+        vpc14 = "vpc-00f28db2d07487ea2"
+        vpc15 = "vpc-0179efbacb1c7c8c8"
+        vpc16 = "vpc-0ff2d264ebfbdfc5c"
+        vpc17 = "vpc-08d545bbb77ef58b2"
+        vpc18 = "vpc-09e035f832cf097c0"
+        vpc19 = "vpc-084dc6fe4e56777f5"
+
+}
+}
+resource "aws_security_group" "cargofl-vpn-sg" {
+  for_each    = var.vpc_ids
+  name        = "cargofl-vpn-sg"
+  description = "Security group for ${each.key}"
+  vpc_id      = each.value
+
+  ingress {
+    description      = "VPN"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["65.2.30.145/32"]
+  }
+
+  ingress {
+    description      = "VPN"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["65.2.30.145/32"]
+  }
+
+   ingress {
+    description      = "VPN"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["65.2.30.145/32"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "cargofl-management-sg" {
+  for_each    = var.vpc_ids
+  name        = "cargofl-management-sg"
+  description = "Security group for ${each.key}"
+  vpc_id      = each.value
+
+  ingress {
+    description      = "Prometheus"
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["52.66.175.137/32"]
+  }
+
+  ingress {
+    description = "Jenkins"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["35.154.64.241/32"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

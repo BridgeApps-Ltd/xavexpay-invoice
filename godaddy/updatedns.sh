@@ -19,10 +19,10 @@ echo "Updating IP Address"
         curl -s -X PUT "https://api.godaddy.com/v1/domains/${DOMAIN}/records/${TYPE}/${HOST}" \
                 -H "Authorization: sso-key ${KEY}:${SECRET}" -H "Content-Type: application/json" \
                 -d "[{\"data\": \"${SERVER_IP}\"}]"
-echo "Updated new ip address $SERVER_IP in godaddy for domain $HOST.$DOMAIN"
+echo "Updated new ip address $SERVER_IP in godaddy for domain $HOST.$DOMAIN as Type $TYPE Record"
 fi
 
 ### Checking if both server and godaddy ip's are similar ###
 if [ "$SERVER_IP" = "$GODADDY_IP" ]; then
-echo "Server and Godaddy IP's are equal, no update is required"
+echo "Server and Godaddy IP's are equal $SERVER_IP = $GODADDY_IP, no update is required"
 fi

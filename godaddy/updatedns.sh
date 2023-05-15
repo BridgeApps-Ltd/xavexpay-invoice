@@ -11,15 +11,21 @@ SECRET="$SECRET"
 SERVER_IP=`curl -s "https://api.ipify.org"`
 
 ### Get the Current godaddy ip for the subdomain.domain ###
-GODADDY_IP=`curl -s -X GET -H "Authorization: sso-key ${KEY}:${SECRET}" "https://api.godaddy.com/v1/domains/${DOMAIN}/records/${TYPE}/${HOST}" | cut -d'[' -f 2 | cut -d']' -f 1 | jq -r '.data'`
+GODADDY_IP=$(curl -s -X GET -H "Authorization: sso-key ${KEY}:${SECRET}" \
+    "https://api.godaddy.com/v1/domains/${DOMAIN}/records/${TYPE}/${HOST}" \
+    | cut -d'[' -f 2 \
+    | cut -d']' -f 1 \
+    | jq -r '.data')
+
 
 ### Checking if both server and godaddy ip's are not similar and if they're not similar update the server ip ###
 if [ "$SERVER_IP" != "$GODADDY_IP" -a "$SERVER_IP" != "" ]; then
-echo "Updating IP Address"
-        curl -s -X PUT "https://api.godaddy.com/v1/domains/${DOMAIN}/records/${TYPE}/${HOST}" \
-                -H "Authorization: sso-key ${KEY}:${SECRET}" -H "Content-Type: application/json" \
-                -d "[{\"data\": \"${SERVER_IP}\"}]"
-echo "Updated new ip address $SERVER_IP in godaddy for domain $HOST.$DOMAIN as Type $TYPE Record"
+curl -s -X PUT "https://api.godaddy.com/v1/domains/${DOMAIN}/records/${TYPE}/${HOST}" \
+    -H "Authorization: sso-key ${KEY}:${SECRET}" \
+    -H "Content-Type: application/json" \
+    -d "[{\"data\": \"${SERVER_IP}\"}]"
+
+echo "Updated new ip address $SERVER_IP in godaddy for domain $HOST.$DOMAIN as Type: $TYPE Record"
 fi
 
 ### Checking if both server and godaddy ip's are similar ###

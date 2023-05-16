@@ -4,32 +4,32 @@ sudo apt-add-repository ppa:ansible/ansible
 
 sudo apt update
 
-sudo apt install ansible
+sudo apt install ansible -y
 
 Install Aws-cli
 --------------------------------------------
-sudo apt install awscli
+sudo apt install awscli -y
 
 Install boto and boto3
 --------------------------------------------
-sudo apt install python-pip
+sudo apt install python3-pip
 
-pip install boto boto3
+pip3 install boto boto3
 
 run playbook
 --------------------------------------------
 ######################################
-# starting ec2 instance
+# starting ec2 instances
 ######################################
 
-ansible-playbook startEc2Instance.yml
+ansible-playbook startAllEc2instances.yml --extra-vars "region=ap-south-1"
 
 --------------------------------------------
 ######################################
-# stopping ec2 instance 
+# stopping ec2 instances
 ######################################
 
-ansible-playbook stopEc2Instance.yml
+ansible-playbook stopAllEc2instances.yml --extra-vars "region=ap-south-1"
 
 Site to check yaml validations 
 --------------------------------------------

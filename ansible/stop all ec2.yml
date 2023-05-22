@@ -1,0 +1,39 @@
+- name: Stop all instances except admin
+  hosts: localhost
+  gather_facts: False
+
+  vars:
+    ec2_region: ""
+    admin_instance_id: ""
+    aws_access_key: ""
+    aws_secret_key: ""
+
+  tasks:
+    - name: Get instance facts
+      ec2_instance_facts:
+        region: "{{ ec2_region }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+      register: ec2_facts
+
+    - name: Exclude admin instance
+      set_fact:
+        excluded_instance_ids: "{{ [admin_instance_id] }}"
+
+    - name: Filter instances to stop
+      set_fact:
+        instances_to_stop: "{{ ec2_facts.instances | rejectattr('instance_id', 'equalto', admin_instance_id) | list }}"
+
+    - name: Stop instances
+      ec2:
+        region: "{{ ec2_region }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        state: stopped
+        instance_ids: "{{ instances_to_stop | map(attribute='instance_id') | list }}"
+        wait: true
+      register: stopped_instances
+
+    - name: Print stopped instances
+      debug:
+        var: stopped_instances

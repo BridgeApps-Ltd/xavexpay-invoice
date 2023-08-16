@@ -8,16 +8,17 @@ resource "aws_vpc" "my_vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "vpc"
+    Name = "my-vpc"
   }
 }
 
 resource "aws_subnet" "my_subnet" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = "10.0.1.0/24"
+  availability_zone = "ap-south-1a"
 
   tags = {
-    Name = "subnet"
+    Name = "my-subnet"
   }
 }
 
@@ -25,7 +26,7 @@ resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
 
   tags = {
-    Name = "InternetGateway"
+    Name = "my-InternetGateway"
   }
 }
 
@@ -38,7 +39,7 @@ resource "aws_route_table" "my_route_table" {
   }
 
   tags = {
-    Name = "RouteTable"
+    Name = "my-RouteTable"
   }
 }
 
@@ -105,4 +106,11 @@ resource "aws_instance" "my_instance" {
   tags = {
     Name = "test"
   }
+
+user_data = <<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y python
+              EOF
 }
+

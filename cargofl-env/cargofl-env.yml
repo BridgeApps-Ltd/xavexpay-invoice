@@ -35,10 +35,10 @@
       hostname:
         name: CargoFL
 
-    - name: Clone private CargoFL repository
-      command: git clone https://Ananthuaxd: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@github.com/innoctive/cargofl.git /home/innoctive/cargofl
-      args:
-        creates: /home/innoctive/cargofl
+    - name: Synchronize the folder
+      synchronize:
+        src: /home/ananthu/cargofl
+        dest: /home/innoctive/
 
     - name: Install Python and virtualenv
       apt:
@@ -85,6 +85,12 @@
         src: /home/ananthu/cargofl.service
         dest: /etc/systemd/system/cargofl.service
 
+    - name: Configure host.ini
+      copy:
+        src: /home/ananthu/cargofl_config.ini
+        dest: /home/innoctive/cargofl_config.ini
+
+
     - name: Reload systemd daemon
       systemd:
         daemon_reload: yes
@@ -94,3 +100,8 @@
         name: cargofl
         state: restarted
         enabled: yes
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

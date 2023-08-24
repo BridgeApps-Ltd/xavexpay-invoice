@@ -5,10 +5,10 @@
 #########################################################################
 
 DATE=$(date +%Y-%m-%d-%H)
-RDS_HOST="decathlon-prod.cu0uoeslvlzn.ap-south-1.rds.amazonaws.com"
+RDS_HOST="sample.cu0uoeslvlzn.ap-south-1.rds.amazonaws.com"
 RDS_PORT="3306"
 RDS_USER="innoctive"
-RDS_PASSWORD="NAp8iW8RZavA5tTDi1Fm"
+RDS_PASSWORD="password"
 DB_NAME=cargofl
 S3_BUCKET="cargofl-decathlon-prod-dbbackups"
 DB_IDENTIFIER="mysqldump_decathlon-prod"

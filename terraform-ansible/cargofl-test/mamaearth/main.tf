@@ -1,4 +1,4 @@
-# main.tf
+
 
 provider "google" {
   credentials = file("/home/ananthu/terraform-gcp.json")

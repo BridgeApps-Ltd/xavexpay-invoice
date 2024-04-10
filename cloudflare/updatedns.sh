@@ -1,14 +1,30 @@
 #!/bin/bash
 
-# Source configuration variables
-source .env
-
 # Function to display a formatted message
 show_message() {
     echo "--------------------------------------------------"
     echo "$1"
     echo "--------------------------------------------------"
 }
+
+# Check if curl is installed
+if ! command -v curl &> /dev/null; then
+    echo "curl is not installed. Installing..."
+    # Install curl using the appropriate package manager for your system
+    # For example, on Debian-based systems (like Ubuntu), you can use:
+    sudo apt-get install -y curl
+fi
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq is not installed. Installing..."
+    # Install jq using the appropriate package manager for your system
+    # For example, on Debian-based systems (like Ubuntu), you can use:
+    sudo apt-get install -y jq
+fi
+
+# Source configuration variables
+source .env
 
 # Confirm the Cloudflare token is working correctly
 show_message "Checking Cloudflare Token status"

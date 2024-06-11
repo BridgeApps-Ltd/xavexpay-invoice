@@ -1,4 +1,12 @@
 #!/bin/bash
+##---------- Author : Mubinahmed Shaikh -----------------------------------------------------##
+##---------- Purpose : To quickly merge dev branch into test branch -------------------------##
+##---------- Tested on : RHEL8/7/6, Ubuntu20/18/16, CentOS , --------------------------------##
+##---------- Boss6(Debian) variants. It may work on other vari as well, but not tested. -----##
+##---------- Updated version : v2.0 (Updated on 11th JUNE 2024) -----------------------------##
+##-----NOTE: This script requires root privileges, otherwise one could run the script -------##
+##---- as a sudo user who got root privileges. ----------------------------------------------##
+##----------- "sudo /bin/bash <ScriptName>" -------------------------------------------------##
 
 source config.ini
 DOMAIN="$DOMAIN"
@@ -32,3 +40,7 @@ fi
 if [ "$SERVER_IP" = "$GODADDY_IP" ]; then
 echo "Server and Godaddy IP's are equal $SERVER_IP = $GODADDY_IP, no update is required"
 fi
+
+echo -e "\n\t\t %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" 
+echo -e "\t\t   <>----------------------<> End OF THE SCRIPT  <>-------------------<>"
+echo -e "\t\t %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" 

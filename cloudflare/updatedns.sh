@@ -1,4 +1,11 @@
 #!/bin/bash
+##---------- Author : Mubinahmed Shaikh -----------------------------------------------------##
+##---------- Purpose : To update the new ip into cloudflare dns for multiple subdomains -----##
+##---------- Tested on : Ubuntu 22/20/18 ----------------------------------------------------##
+##---------- Updated version : v2.0 (Updated on 11th JUNE 2024) -----------------------------##
+##-----NOTE: This script requires root privileges, otherwise one could run the script -------##
+##---- as a sudo user who got root privileges. ----------------------------------------------##
+##----------- "sudo /bin/bash <ScriptName>" -------------------------------------------------##
 
 # Function to display a formatted message
 show_message() {
@@ -78,3 +85,6 @@ for dnsrecord in "${dnsrecords[@]}"; do
         --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$addressip\",\"ttl\":1,\"proxied\":true}" | jq
     fi
 done
+echo -e "\n\t\t %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" 
+echo -e "\t\t   <>----------------------<> End OF THE SCRIPT  <>-------------------<>"
+echo -e "\t\t %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" 

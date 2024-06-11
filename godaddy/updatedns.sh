@@ -1,6 +1,6 @@
 #!/bin/bash
 ##---------- Author : Mubinahmed Shaikh -----------------------------------------------------##
-##---------- Purpose : To quickly merge dev branch into test branch -------------------------##
+##---------- Purpose : To update the new server ip into godaddy dns -------------------------##
 ##---------- Tested on : RHEL8/7/6, Ubuntu20/18/16, CentOS , --------------------------------##
 ##---------- Boss6(Debian) variants. It may work on other vari as well, but not tested. -----##
 ##---------- Updated version : v2.0 (Updated on 11th JUNE 2024) -----------------------------##

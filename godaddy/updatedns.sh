@@ -2,11 +2,26 @@
 ##---------- Author : Mubinahmed Shaikh -----------------------------------------------------##
 ##---------- Purpose : To update the new server ip into godaddy dns -------------------------##
 ##---------- Tested on : Ubuntu 22/20/18 ----------------------------------------------------##
-##---------- Boss6(Debian) variants. It may work on other vari as well, but not tested. -----##
 ##---------- Updated version : v2.0 (Updated on 11th JUNE 2024) -----------------------------##
 ##-----NOTE: This script requires root privileges, otherwise one could run the script -------##
 ##---- as a sudo user who got root privileges. ----------------------------------------------##
 ##----------- "sudo /bin/bash <ScriptName>" -------------------------------------------------##
+
+# Check if curl is installed
+if ! command -v curl &> /dev/null; then
+    echo "curl is not installed. Installing..."
+    # Install curl using the appropriate package manager for your system
+    # For example, on Debian-based systems (like Ubuntu), you can use:
+    sudo apt-get install -y curl
+fi
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq is not installed. Installing..."
+    # Install jq using the appropriate package manager for your system
+    # For example, on Debian-based systems (like Ubuntu), you can use:
+    sudo apt-get install -y jq
+fi
 
 source config.ini
 DOMAIN="$DOMAIN"

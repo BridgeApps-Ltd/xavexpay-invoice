@@ -19,10 +19,8 @@ echo "------------------------------------------"
 
 # Check the status of each service
 count=1
-check_service "npm-godrej"
-check_service "npm-tk"
-check_service "npm-western"
-check_service "npm-sintex"
-check_service "npm-dc"
-check_service "npm-bmx"
-check_service "npm-nourishco"
+check_service "tomcat"
+check_service "nginx"
+check_service "php8.2-fpm"
+check_service "podx-payment"
+check_service "gmp-app"

@@ -1,0 +1,100 @@
+{
+  "id": "7c89345d6ea520e799fc2d120625c465",
+  "name": "bridgeapps.co.uk",
+  "content": "34.147.194.194"
+}
+{
+  "id": "756f28f0827688c239cf1e8938a55c0c",
+  "name": "core-banking.bridgeapps.co.uk",
+  "content": "165.120.111.185"
+}
+{
+  "id": "2cc0621ce570fd5816bb77916cbd01aa",
+  "name": "crater.bridgeapps.co.uk",
+  "content": "165.120.111.185"
+}
+{
+  "id": "f0afbf8a20a2c2f2db99b0b2a8ca4be8",
+  "name": "payments.bridgeapps.co.uk",
+  "content": "18.170.115.135"
+}
+{
+  "id": "4cde00a157f4751d9af924f5ccd5f851",
+  "name": "pin.bridgeapps.co.uk",
+  "content": "165.120.111.185"
+}
+{
+  "id": "748db701d56693354e481a9bde29c00f",
+  "name": "prodigy.bridgeapps.co.uk",
+  "content": "34.147.194.194"
+}
+{
+  "id": "492f2277bac792d074ea0660a42082e0",
+  "name": "proxyserver-bapps-137482.bridgeapps.co.uk",
+  "content": "13.40.124.168"
+}
+{
+  "id": "e68fcf3c6c11c3699836246525df5728",
+  "name": "sign.bridgeapps.co.uk",
+  "content": "165.120.111.185"
+}
+{
+  "id": "240dde035c98efcfd9d972805b82ef3e",
+  "name": "testx.bridgeapps.co.uk",
+  "content": "35.178.176.176"
+}
+{
+  "id": "773b96d39fc8a78d81bc3be54d560ef8",
+  "name": "mail.bridgeapps.co.uk",
+  "content": "mail.kattare.com"
+}
+{
+  "id": "72eec5d3ac2dea61700b6f69251e2615",
+  "name": "smtp.bridgeapps.co.uk",
+  "content": "mail.kattare.com"
+}
+{
+  "id": "a24943caf19449938cf1234c73ae7813",
+  "name": "www.bridgeapps.co.uk",
+  "content": "bridgeapps.co.uk"
+}
+{
+  "id": "1e7212adef8f8c2c86346ee92bf26868",
+  "name": "bridgeapps.co.uk",
+  "content": "mail-in.kattare.com"
+}
+{
+  "id": "a0cf033d3d7ad8ca88c1fb9a5e870eeb",
+  "name": "bridgeapps.co.uk",
+  "content": "aspmx.l.google.com"
+}
+{
+  "id": "a277853edcf507046dd3907832a030ab",
+  "name": "bridgeapps.co.uk",
+  "content": "alt1.aspmx.l.google.com"
+}
+{
+  "id": "22d2fa78121ccf40d0dc4142c77cb807",
+  "name": "bridgeapps.co.uk",
+  "content": "google-site-verification=SerUIAudXolZOVXQ9I-COF7bLfLX2dfw6KlQ7AHUmxw"
+}
+{
+  "id": "de81c62522412245f4eb97bea389eef2",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 mx include:kattare.com -all"
+}
+{
+  "id": "39629c320aec143a4a451af9ee9ed681",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 mx include:_spf.google.com -all"
+}
+{
+  "id": "6c80534d386450c7e1ae0a2ade75a5ac",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 a mx include:_spf.google.com ~all"
+}
+{
+  "id": "703e2f07b41c7482ae93c49893daf9ae",
+  "name": "_dmarc.bridgeapps.co.uk",
+  "content": "v=DMARC1;  p=none; rua=mailto:08b63f9576fc48bca480bf4aabebe3b2@dmarc-reports.cloudflare.net"
+}

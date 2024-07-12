@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# This command below will open a SSH tunnel with BridgeServer on a local port (5901)
+# This tunnel will be used by "TigerVNC" to connect to localhost:5901 and show the screen
+# There is no need for the UFW on the server to open 5901 
+
+# Steps to start seeing remote desktop server
+# 
+# STEP#1. Start vnc server in BridgeServer. 
+#         To do this, after standard ssh as dkurupp, start from _scripts/
+# STEP#2. Run this script, to start SSH tunnel, leave this connection on the terminal out there.
+#         This should ask for password for dkurupp user to the BridgeServer
+# STEP#3. Run "Tiger VNC" from bridge master lap / this one, and then connect to localhost:5901
+#         This will prompt for the VNC Server password
+#
+# Desktop comes up !!
+#
+
+# --- Options ---
+# -L 5901:localhost:5901 - tunnels 5901 port of "destination" server  to localhost:5901
+# -C This flag enables compression which can help minimize resource consumption and speed things up.
+# -l uses the user for the server
+
+ssh -L 5901:localhost:5901 -C -l dkurupp 192.168.1.103

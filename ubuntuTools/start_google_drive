@@ -1,0 +1,4 @@
+#!/bin/bash
+
+google-drive-ocamlfuse
+# google-drive-ocamlfuse -label BADrive ~/d/workarea1

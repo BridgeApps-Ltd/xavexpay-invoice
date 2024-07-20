@@ -7,7 +7,7 @@ API_TOKEN="dFL7Dg-ILqcHMYKbhVDHvGsp0i7pRPInacxGf94P"
 ZONE_ID="d3a2e7705feed2ca20bb41e981f03ab7"
 
 # List of DNS names to update
-NAMES=("api.bridgeapps.co.uk" "apidesigner.bridgeapps.co.uk" "bian-auth.bridgeapps.co.uk" "bian-bank.bridgeapps.co.uk" "bian.bridgeapps.co.uk" "bian-customer-management.bridgeapps.co.uk" "bian-dashboard.bridgeapps.co.uk" "bian-document.bridgeapps.co.uk" "bian-document-management.bridgeapps.co.uk" "bian-party.bridgeapps.co.uk" "bian-product.bridgeapps.co.uk" "bian-product-management.bridgeapps.co.uk" "bian-sales.bridgeapps.co.uk" "bian-sales-management.bridgeapps.co.uk" "bian-session-dialogue.bridgeapps.co.uk" "bian-trace.bridgeapps.co.uk" "jwt-revoker.bridgeapps.co.uk" "kibana.bridgeapps.co.uk")
+NAMES=("pin.bridgeapps.co.uk" "sign.bridgeapps.co.uk" "crater.bridgeapps.co.uk" "api.bridgeapps.co.uk" "apidesigner.bridgeapps.co.uk" "bian-auth.bridgeapps.co.uk" "bian-bank.bridgeapps.co.uk" "bian.bridgeapps.co.uk" "bian-customer-management.bridgeapps.co.uk" "bian-dashboard.bridgeapps.co.uk" "bian-document.bridgeapps.co.uk" "bian-document-management.bridgeapps.co.uk" "bian-party.bridgeapps.co.uk" "bian-product.bridgeapps.co.uk" "bian-product-management.bridgeapps.co.uk" "bian-sales.bridgeapps.co.uk" "bian-sales-management.bridgeapps.co.uk" "bian-session-dialogue.bridgeapps.co.uk" "bian-trace.bridgeapps.co.uk" "jwt-revoker.bridgeapps.co.uk" "kibana.bridgeapps.co.uk")
 
 
 # ============ DO NOT TOUCH CODE BELOW ========================
@@ -61,7 +61,7 @@ update_dns_record() {
             -H "X-Auth-Email: info@bridgeapps.co.uk" \
             -H "Authorization: Bearer $API_TOKEN" \
             -H "Content-Type: application/json"  \
-            --data '{"type":"'"A"'","name":"'"pin"'","content":"'"$new_content"'","proxied":'"true"',"ttl":'"1"'}'
+            --data '{"type":"'"A"'","name":"'"$domain_name"'","content":"'"$new_content"'","proxied":'"true"',"ttl":'"1"'}'
     else
         echo "... ERROR: Deletion of record from DNS for record_id $record_id failed. Exiting"
         exit 1; 

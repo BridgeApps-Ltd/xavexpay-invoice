@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# Log Analyzer & Report Generator Script
+# --------------------------------------
+# This Bash script automates the analysis of log files and generates daily summary reports.
+# Key Features:
+# 1. Error Count: Scans the log file and counts occurrences of "ERROR" or "Failed".
+# 2. Top 5 Error Messages: Identifies the most frequent error messages to help prioritize issues.
+# 3. Critical Events: Finds lines containing "CRITICAL" and prints them with their line numbers.
+# 4. Summary Report: Automatically generates a report including:
+#    - Date of analysis
+#    - Log file name
+#    - Total lines processed
+#    - Total error count
+#    - Top 5 error messages
+#    - List of critical events (with line numbers)
+
+# How to Run:
+# 1. Save the script as log_analyzer.sh.
+# 2. Make the script executable: chmod +x log_analyzer.sh
+# 3. Run the script with the path to the log file as an argument:
+#    ./log_analyzer.sh /path/to/your/logfile.log
+# 4. The script will output a summary report in the current directory
+#    with a filename like log_report_YYYY-MM-DD.txt, containing analysis details.
+
 # Define the log file (can be passed as an argument)
 LOG_FILE=$1
 

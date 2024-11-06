@@ -1,5 +1,9 @@
 Convert the techchallenge script into a binary executable, you can use a tool called shc (Shell Script Compiler). This tool compiles a shell script into a standalone binary. Here’s a step-by-step 
 
+Create directory to save logs somewhere
+sudo mkdir -p /var/cache/somewhere
+sudo mkdir -p /var/cache/somewhere/logger
+
 Step 1: Install shc
 
 If shc is not already installed on your system, you can usually install it via your package manager.

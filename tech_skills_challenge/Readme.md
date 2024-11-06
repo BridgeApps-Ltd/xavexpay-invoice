@@ -3,8 +3,8 @@ Convert the techchallenge script into a binary executable, you can use a tool ca
 Create directory to save logs somewhere and give required permissions
 sudo mkdir -p /var/cache/somewhere
 sudo mkdir -p /var/cache/somewhere/logger
-sudo chmod -R 755 /var/cache/somewhere/logger
-sudo chown -R $USER /var/cache/somewhere/logger
+sudo chmod -R 777 /var/cache/somewhere/logger
+
 
 ## Set TimeZone to Asia/Kolkata
 sudo timedatectl set-timezone Asia/Kolkata

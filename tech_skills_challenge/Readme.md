@@ -6,6 +6,9 @@ sudo mkdir -p /var/cache/somewhere/logger
 sudo chmod -R 755 /var/cache/somewhere/logger
 sudo chown -R $USER /var/cache/somewhere/logger
 
+## Set TimeZone to Asia/Kolkata
+sudo timedatectl set-timezone Asia/Kolkata
+
 Step 1: Install shc
 
 If shc is not already installed on your system, you can usually install it via your package manager.

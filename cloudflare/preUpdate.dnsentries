@@ -1,7 +1,87 @@
 {
+  "id": "18cbf1f88227b2207d052849a34b4c15",
+  "name": "api.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "02c508f30592b227cc2eb038e9046c76",
+  "name": "apidesigner.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "695426d148469f0811f32b745c368634",
+  "name": "bian-auth.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "c6c8288e9f618ab3eef6aafc797fd812",
+  "name": "bian-bank.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "6ce113dca5b606bce6d91aa6bd0b1de2",
+  "name": "bian.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "bf222e3f4822c9189a7a3ec4899fb672",
+  "name": "bian-customer-management.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "f493ee32721f349a9a811bf061eff8e1",
+  "name": "bian-dashboard.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "f1332d86bc0e006b978bd9af72803d16",
+  "name": "bian-document.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "ca5611dff6fe4a9005f985560295711d",
+  "name": "bian-document-management.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "9e2d1a99d00484f46d891762e23ddd15",
+  "name": "bian-party.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "0f5024ea612aabc69e50035210f4dcc2",
+  "name": "bian-product.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "52746d6acc2d78bc5f90e4ebaf156834",
+  "name": "bian-product-management.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "9a3bbc3e12d594e3909f9e9f02ef3cbe",
+  "name": "bian-sales.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "0674b1191246808d0245bb0b9b3e6056",
+  "name": "bian-sales-management.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "42c688d9c0df07a6f4b9c951857d897e",
+  "name": "bian-session-dialogue.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "a8928d37d40f20b30b0308d463539084",
+  "name": "bian-trace.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
   "id": "7c89345d6ea520e799fc2d120625c465",
   "name": "bridgeapps.co.uk",
-  "content": "34.147.194.194"
+  "content": "35.246.51.204"
 }
 {
   "id": "756f28f0827688c239cf1e8938a55c0c",
@@ -9,9 +89,19 @@
   "content": "165.120.111.185"
 }
 {
-  "id": "2cc0621ce570fd5816bb77916cbd01aa",
+  "id": "ae2052863125f616e375496c749c3aa7",
   "name": "crater.bridgeapps.co.uk",
-  "content": "165.120.111.185"
+  "content": "86.145.167.253"
+}
+{
+  "id": "a477f8c8de3022ddc10cef9aa0aa8a33",
+  "name": "jwt-revoker.bridgeapps.co.uk",
+  "content": "86.145.167.253"
+}
+{
+  "id": "f0802f6d176c67009f9da81ca46e7422",
+  "name": "kibana.bridgeapps.co.uk",
+  "content": "86.145.167.253"
 }
 {
   "id": "f0afbf8a20a2c2f2db99b0b2a8ca4be8",
@@ -19,9 +109,9 @@
   "content": "18.170.115.135"
 }
 {
-  "id": "4cde00a157f4751d9af924f5ccd5f851",
+  "id": "8cbd74c6d94a78e14597494001d71438",
   "name": "pin.bridgeapps.co.uk",
-  "content": "165.120.111.185"
+  "content": "86.145.167.253"
 }
 {
   "id": "748db701d56693354e481a9bde29c00f",
@@ -34,9 +124,9 @@
   "content": "13.40.124.168"
 }
 {
-  "id": "e68fcf3c6c11c3699836246525df5728",
+  "id": "73df9c0fb620fe98a71d21f53ff7fb38",
   "name": "sign.bridgeapps.co.uk",
-  "content": "165.120.111.185"
+  "content": "86.145.167.253"
 }
 {
   "id": "240dde035c98efcfd9d972805b82ef3e",

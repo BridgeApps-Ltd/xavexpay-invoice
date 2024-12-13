@@ -1,108 +1,122 @@
-TechChallenge Script
+# TechChallenge Script
 
-Overview
+## Overview
 
-The TechChallenge script is a utility to manage a tech challenge process. It tracks the start and finish times, logs activities, and sends notifications via email. This guide explains how to set up and use the script, including converting it into a standalone binary executable.
+The **TechChallenge** script is a utility designed to manage a tech challenge process. It tracks start and finish times, logs activities, and sends notifications via email. This guide explains how to set up and use the script, including converting it into a standalone binary executable.
 
-Setup Instructions
+---
 
-Prerequisites
+## Setup Instructions
 
-Create Log Directory
+### Prerequisites
 
+Ensure the following setup steps are completed before using the script:
+
+#### 1. **Create Log Directory**
+
+To store log files, create a log directory and set appropriate permissions:
+
+```bash
 sudo mkdir -p /var/cache/somewhere/logger
 sudo chmod -R 777 /var/cache/somewhere/logger
+```
 
-Set TimeZone
+## Set TimeZone
 
+```bash
 sudo timedatectl set-timezone Asia/Kolkata
+```
 
-Install Required Packages
+## Install Required Packages
 
 Update and install dependencies:
 
+```bash
 sudo apt-get update
 sudo apt-get install shc build-essential
+```
 
-Script Compilation
+## Script Compilation
 
 To enhance security and portability, the script can be converted into a binary executable using shc.
 
-Step 1: Compile the Script
+#### Step 1: Compile the Script
 
 Navigate to the directory where the techchallenge script is located.
 
 Run the following command to compile the script:
 
+```bash
 shc -f techchallenge
+```
 
 This will generate two files:
-
+```bash
 techchallenge.x: The compiled binary.
 
 techchallenge.x.c: The generated C source code (optional).
-
-Step 2: Rename and Move the Binary
+```
+#### Step 2: Rename and Move the Binary
 
 Rename the binary for convenience:
-
+```bash
 mv techchallenge.x techchallenge
-
+```
 Move the binary to a directory in your PATH (e.g., /usr/local/bin):
-
+```bash
 sudo mv techchallenge /usr/local/bin/
-
+```
 Usage
 
 Commands
 
 Start the TechChallenge
-
+```bash
 techchallenge start
-
+```
 Logs the start time.
 
 Sends an email notification to the configured recipient.
 
 Finish the TechChallenge
-
+```bash
 techchallenge finish
-
+```
 Calculates and logs the elapsed time.
 
 Sends an email notification with the completion details.
 
 Request Help
-
+```bash
 techchallenge help
-
+```
 Sends a help request email to the configured recipient.
 
 Invalid Command
 
 Running the script with an invalid command will show the usage message:
-
+```bash
 Usage: techchallenge [start|finish|help]
-
-Notes
+```
+## Notes
 
 The script prevents execution as the root user for safety.
 
-Logs are saved to /var/log/techchallenge.log.
+Logs are saved to /var/cache/somewhere/logger/backpacks.log.
 
-Important Information
+#### Important Information
 
-Email Notifications:
+## Email Notifications:
 
 Uses AWS SES to send emails.
 
 Ensure AWS CLI is configured with valid credentials and permissions.
 
-Recompilation:
+#### Recompilation:
 
 If you modify the script, recompile it to reflect the changes in the binary.
 
-Troubleshooting
+#### Troubleshooting
 
 AWS SES Errors:
 
@@ -110,16 +124,16 @@ Verify AWS CLI credentials.
 
 Check if the configured AWS_REGION is correct.
 
-Permissions Issues:
+#### Permissions Issues:
 
 Ensure the log directory and files have the necessary permissions:
-
+```bash
 sudo chmod -R 777 /var/cache/somewhere/logger
-
-Script Not Found:
+```
+#### Script Not Found:
 
 Ensure the binary is moved to a directory in your PATH (e.g., /usr/local/bin).
 
-Author
+#### Author
 
 Developed by the CargoFL Team. Contact no-reply@cargofl.com for assistance.

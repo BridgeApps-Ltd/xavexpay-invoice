@@ -3,11 +3,14 @@ import { useI18n } from 'vue-i18n'
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { debounce } from 'lodash'
+import moment from 'moment'
 
 import { useInvoiceStore } from '@/scripts/admin/stores/invoice'
 import { useModalStore } from '@/scripts/stores/modal'
 import { useUserStore } from '@/scripts/admin/stores/user'
 import { useDialogStore } from '@/scripts/stores/dialog'
+import { usePaymentStore } from '@/scripts/admin/stores/payment'
+import { useNotificationStore } from '@/scripts/stores/notification'
 
 import SendInvoiceModal from '@/scripts/admin/components/modal-components/SendInvoiceModal.vue'
 import InvoiceDropdown from '@/scripts/admin/components/dropdowns/InvoiceIndexDropdown.vue'
@@ -19,6 +22,7 @@ const modalStore = useModalStore()
 const invoiceStore = useInvoiceStore()
 const userStore = useUserStore()
 const dialogStore = useDialogStore()
+const paymentStore = usePaymentStore()
 
 const { t } = useI18n()
 const invoiceData = ref(null)
@@ -103,6 +107,121 @@ async function onSendInvoice(id) {
     id: invoiceData.value.id,
     data: invoiceData.value,
   })
+}
+
+async function onPayAsCash() {
+  dialogStore
+    .openDialog({
+      title: t('general.are_you_sure'),
+      message: t('invoices.pay_as_cash_confirmation'),
+      yesLabel: t('general.ok'),
+      noLabel: t('general.cancel'),
+      variant: 'primary',
+      hideNoButton: false,
+      size: 'lg',
+    })
+    .then(async (response) => {
+      if (response) {
+        try {
+          console.log('Getting next payment number...')
+          // Get next payment number with company ID
+          const nextPaymentNumber = await paymentStore.getNextNumber({
+            userId: invoiceData.value.customer_id,
+            model_id: invoiceData.value.id
+          }, true)
+          
+          console.log('Next payment number response:', nextPaymentNumber)
+          
+          // Create payment data
+          const paymentData = {
+            customer_id: invoiceData.value.customer_id,
+            invoice_id: invoiceData.value.id,
+            amount: invoiceData.value.total,
+            payment_date: moment().format('YYYY-MM-DD'),
+            payment_method_id: 1, // Assuming 1 is the ID for cash payment method
+            notes: t('invoices.paid_as_cash'),
+            payment_number: nextPaymentNumber.data.nextNumber,
+            company_id: invoiceData.value.company_id
+          }
+
+          console.log('Payment data being sent:', paymentData)
+
+          // Create payment
+          await paymentStore.addPayment(paymentData)
+          
+          // Refresh invoice data
+          await loadInvoice()
+          
+          // Show success notification
+          const notificationStore = useNotificationStore()
+          notificationStore.showNotification({
+            type: 'success',
+            message: t('invoices.payment_created_successfully'),
+          })
+        } catch (error) {
+          console.error('Error in onPayAsCash:', error)
+          handleError(error)
+        }
+      }
+    })
+}
+
+async function onGeneratePaymentLink() {
+  dialogStore
+    .openDialog({
+      title: t('general.are_you_sure'),
+      message: t('invoices.generate_payment_link_confirmation'),
+      yesLabel: t('general.ok'),
+      noLabel: t('general.cancel'),
+      variant: 'primary',
+      hideNoButton: false,
+      size: 'lg',
+    })
+    .then(async (response) => {
+      if (response) {
+        try {
+          // Get next payment number with company ID
+          const nextPaymentNumber = await paymentStore.getNextNumber({
+            userId: invoiceData.value.customer_id,
+            model_id: invoiceData.value.id
+          }, true)
+          
+          // Create payment data
+          const paymentData = {
+            customer_id: invoiceData.value.customer_id,
+            invoice_id: invoiceData.value.id,
+            amount: invoiceData.value.total,
+            payment_date: moment().format('YYYY-MM-DD'),
+            payment_method_id: 1, // Assuming 1 is the ID for cash payment method
+            notes: t('invoices.payment_link_generated'),
+            payment_number: nextPaymentNumber.data.nextNumber,
+            company_id: invoiceData.value.company_id
+          }
+
+          // Create payment
+          const payment = await paymentStore.addPayment(paymentData)
+          
+          // Get the payment link
+          const paymentLink = `${window.location.origin}/payments/pdf/${payment.data.data.unique_hash}`
+          
+          // Copy to clipboard
+          $utils.copyTextToClipboard(paymentLink)
+          
+          // Show success notification
+          const notificationStore = useNotificationStore()
+          notificationStore.showNotification({
+            type: 'success',
+            message: t('invoices.payment_link_copied'),
+          })
+          
+          // Refresh invoice data
+          await loadInvoice()
+        } catch (error) {
+          console.error('Error in onGeneratePaymentLink:', error)
+          handleError(error)
+        }
+      }
+    })
 }
 
 function hasActiveUrl(id) {
@@ -254,10 +373,34 @@ onSearched = debounce(onSearched, 500)
             userStore.hasAbilities(abilities.SEND_INVOICE)
           "
           variant="primary"
-          class="text-sm"
+          class="text-sm mr-2"
           @click="onSendInvoice"
         >
           {{ $t('invoices.send_invoice') }}
+        </BaseButton>
+
+        <BaseButton
+          v-if="
+            invoiceData.status === 'DRAFT' &&
+            userStore.hasAbilities(abilities.CREATE_PAYMENT)
+          "
+          variant="primary"
+          class="text-sm"
+          @click="onPayAsCash"
+        >
+          {{ $t('invoices.pay_as_cash') }}
+        </BaseButton>
+
+        <BaseButton
+          v-if="
+            invoiceData.status === 'DRAFT' &&
+            userStore.hasAbilities(abilities.CREATE_PAYMENT)
+          "
+          variant="primary"
+          class="text-sm ml-2"
+          @click="onGeneratePaymentLink"
+        >
+          {{ $t('invoices.generate_payment_link') }}
         </BaseButton>
 
         <!-- Record Payment  -->

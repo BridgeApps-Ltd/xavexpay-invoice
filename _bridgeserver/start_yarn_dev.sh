@@ -1,0 +1,1 @@
+nohup yarn dev &

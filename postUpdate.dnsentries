@@ -1,0 +1,225 @@
+{
+  "id": "afedf4be11d609dc1be69eff80efadd1",
+  "name": "api.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "9b0d3bb2604c31898e2eb1ad6bea7e3c",
+  "name": "apidesigner.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "c11f560caa192177fe4959afde21c6ce",
+  "name": "bian-auth.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "94d2c239354fc1aab2b0abf0b640ecf5",
+  "name": "bian-bank.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "454be5c4334f1e3bc86cc25c983c3e6f",
+  "name": "bian.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "f470e07da6d492711f42e1a0b5d1175c",
+  "name": "bian-customer-management.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "a80b6042fb71aadfed4b77f3f1357f0b",
+  "name": "bian-dashboard.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "21fc08c49d9825c05a5686b7c6163bf4",
+  "name": "bian-document.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "e5ae457d8d0e125cee08b5f5afa7672f",
+  "name": "bian-document-management.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "e6f460a3504d986acc6c227600520020",
+  "name": "bian-party.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "1da45c66645b669d483995bca3a64fa9",
+  "name": "bian-product.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "7a1382b600b947d89214c79b38f6d285",
+  "name": "bian-product-management.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "b09a2b1531f321ba99a24fcb26178592",
+  "name": "bian-sales.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "e92f3463b39d0c9e154b0cf9a4d57689",
+  "name": "bian-sales-management.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "1dca32a46c35826a789afaff4cc56d1d",
+  "name": "bian-session-dialogue.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "22ba7b599f623cd46176497fefc92022",
+  "name": "bian-trace.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "7c89345d6ea520e799fc2d120625c465",
+  "name": "bridgeapps.co.uk",
+  "content": "35.214.86.148"
+}
+{
+  "id": "756f28f0827688c239cf1e8938a55c0c",
+  "name": "core-banking.bridgeapps.co.uk",
+  "content": "165.120.111.185"
+}
+{
+  "id": "d5da658c307a89a0668cfa44fd86dea2",
+  "name": "crater.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "9e3a53f138b8cb5c81255717a010833d",
+  "name": "crm.bridgeapps.co.uk",
+  "content": "86.132.136.191"
+}
+{
+  "id": "4aa47d4bd8c7002b06e1bf2384c9481a",
+  "name": "dash.bridgeapps.co.uk",
+  "content": "86.132.136.191"
+}
+{
+  "id": "5ca124b0381a019d6aee18d4c6af14c7",
+  "name": "jwt-revoker.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "44e74c5360ad98a8b9f01d923e6dcbbf",
+  "name": "kibana.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "bf5c2be19e995c3b5f9a38d689080790",
+  "name": "kibana.bridgeapps.co.uk,.bridgeapps.co.uk",
+  "content": "86.132.136.191"
+}
+{
+  "id": "f0afbf8a20a2c2f2db99b0b2a8ca4be8",
+  "name": "payments.bridgeapps.co.uk",
+  "content": "3.10.164.225"
+}
+{
+  "id": "8a7bc9e1910eb9d889b36c384ee3d924",
+  "name": "pin.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "748db701d56693354e481a9bde29c00f",
+  "name": "prodigy.bridgeapps.co.uk",
+  "content": "34.147.194.194"
+}
+{
+  "id": "492f2277bac792d074ea0660a42082e0",
+  "name": "proxyserver-bapps-137482.bridgeapps.co.uk",
+  "content": "13.40.124.168"
+}
+{
+  "id": "8566ee16085cad94c16ead2d028c90f5",
+  "name": "sign.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "59f57a46a2eaf6707d4d81459ae800b9",
+  "name": "sso.bridgeapps.co.uk",
+  "content": "35.214.86.148"
+}
+{
+  "id": "240dde035c98efcfd9d972805b82ef3e",
+  "name": "testx.bridgeapps.co.uk",
+  "content": "35.178.176.176"
+}
+{
+  "id": "fe31f55c4101fa1df27ad5c20b9217f0",
+  "name": "xavexpay.com.bridgeapps.co.uk",
+  "content": "81.129.67.95"
+}
+{
+  "id": "d8efb690e4c3d9ef65bee00c8627a7b2",
+  "name": "xavexpay.com.bridgeapps.co.uk",
+  "content": "81.158.140.42"
+}
+{
+  "id": "c65aca5035fa47914639fad20c9ee1bf",
+  "name": "xavexpay.com.bridgeapps.co.uk",
+  "content": "86.139.151.129"
+}
+{
+  "id": "50906b301d1460a53b8ae658958083df",
+  "name": "xavexpay.com.bridgeapps.co.uk",
+  "content": "86.132.136.191"
+}
+{
+  "id": "773b96d39fc8a78d81bc3be54d560ef8",
+  "name": "mail.bridgeapps.co.uk",
+  "content": "mail.kattare.com"
+}
+{
+  "id": "72eec5d3ac2dea61700b6f69251e2615",
+  "name": "smtp.bridgeapps.co.uk",
+  "content": "mail.kattare.com"
+}
+{
+  "id": "a24943caf19449938cf1234c73ae7813",
+  "name": "www.bridgeapps.co.uk",
+  "content": "bridgeapps.co.uk"
+}
+{
+  "id": "a0cf033d3d7ad8ca88c1fb9a5e870eeb",
+  "name": "bridgeapps.co.uk",
+  "content": "aspmx.l.google.com"
+}
+{
+  "id": "a277853edcf507046dd3907832a030ab",
+  "name": "bridgeapps.co.uk",
+  "content": "alt1.aspmx.l.google.com"
+}
+{
+  "id": "22d2fa78121ccf40d0dc4142c77cb807",
+  "name": "bridgeapps.co.uk",
+  "content": "google-site-verification=SerUIAudXolZOVXQ9I-COF7bLfLX2dfw6KlQ7AHUmxw"
+}
+{
+  "id": "de81c62522412245f4eb97bea389eef2",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 mx include:kattare.com -all"
+}
+{
+  "id": "39629c320aec143a4a451af9ee9ed681",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 mx include:_spf.google.com -all"
+}
+{
+  "id": "6c80534d386450c7e1ae0a2ade75a5ac",
+  "name": "bridgeapps.co.uk",
+  "content": "v=spf1 a mx include:_spf.google.com ~all"
+}
+{
+  "id": "703e2f07b41c7482ae93c49893daf9ae",
+  "name": "_dmarc.bridgeapps.co.uk",
+  "content": "v=DMARC1;  p=none; rua=mailto:08b63f9576fc48bca480bf4aabebe3b2@dmarc-reports.cloudflare.net"
+}

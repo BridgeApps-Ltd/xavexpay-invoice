@@ -327,6 +327,12 @@ export default [
             meta: { isOwner: true },
             component: UpdateApp,
           },
+          {
+            path: 'database',
+            name: 'database.settings',
+            meta: { isOwner: true },
+            component: () => import('@/scripts/pages/settings/DatabaseSettings.vue'),
+          },
         ],
       },
 

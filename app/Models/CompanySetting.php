@@ -9,7 +9,11 @@ class CompanySetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['company_id', 'option', 'value'];
+    protected $fillable = [
+        'company_id', 
+        'option', 
+        'value'
+    ];
 
     public function company()
     {

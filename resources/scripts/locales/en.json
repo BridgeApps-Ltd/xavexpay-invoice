@@ -815,7 +815,8 @@
       "payment_modes": "Payment Modes",
       "notes": "Notes",
       "exchange_rate": "Exchange Rate",
-      "address_information": "Address Information"
+      "address_information": "Address Information",
+      "database": "Database Settings"
     },
     "address_information": {
       "section_description": "  You can update Your Address information using form below."

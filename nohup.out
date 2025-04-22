@@ -1,0 +1,35 @@
+
+  vite v2.6.14 dev server running at:
+
+  > Local: http://localhost:3000/build/
+  > Network: use `--host` to expose
+
+  ready in 2373ms.
+
+10:56:32 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values.
+10:56:33 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x2)
+10:57:50 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x3)
+10:57:50 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x4)
+Port 3000 is in use, trying another one...
+
+  vite v2.6.14 dev server running at:
+
+  > Local: http://localhost:3001/build/
+  > Network: use `--host` to expose
+
+  ready in 1222ms.
+
+11:22:27 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x5)
+11:22:27 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values.
+11:22:27 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x6)
+11:22:27 [vite] changed tsconfig file detected: /home/kurudi/workarea/code/xavexpay-invoice/tsconfig.json - Clearing cache and forcing full-reload to ensure typescript is compiled with updated config values. (x2)
+Port 3000 is in use, trying another one...
+Port 3001 is in use, trying another one...
+
+  vite v2.6.14 dev server running at:
+
+  > Local: http://localhost:3002/build/
+  > Network: use `--host` to expose
+
+  ready in 1852ms.
+

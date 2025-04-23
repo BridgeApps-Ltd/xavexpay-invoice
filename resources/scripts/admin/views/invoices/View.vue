@@ -311,26 +311,51 @@ async function onGeneratePaymentLink() {
               }
 
               // Construct the payment link by replacing 'null?' with 'pay.ps?'
-              const paymentLink = `${paymentDomain.value}${responseUrl.replace('null?', 'pay.ps?')}`
+              const paymentLink = `${paymentDomain.value}/${responseUrl.replace('null?', 'pay.ps?')}`
               console.log('Generated Payment Link:', paymentLink)
 
-              // Store payment link in custom field
-              const customFieldData = {
-                fields: [{
-                  name: 'PaymentLink',
-                  value: paymentLink
-                }]
-              }
-
-              console.log('Updating invoice with payment link:', {
-                invoiceId: invoiceData.value.id,
-                customFieldData: customFieldData
-              })
-
               try {
+                // First fetch the custom field ID for PaymentLink
+                const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
+                  params: {
+                    model_type: 'Invoice',
+                    name: 'PaymentLink'
+                  }
+                })
+
+                if (!customFieldsResponse.data || !customFieldsResponse.data.data || !customFieldsResponse.data.data[0]) {
+                  throw new Error('PaymentLink custom field not found')
+                }
+
+                const paymentLinkFieldId = customFieldsResponse.data.data[0].id
+
+                // Store payment link in custom field
+                const customFieldData = {
+                  fields: [{
+                    id: paymentLinkFieldId,
+                    name: 'PaymentLink',
+                    value: paymentLink
+                  }]
+                }
+
+                console.log('Updating invoice with payment link:', {
+                  invoiceId: invoiceData.value.id,
+                  customFieldData: customFieldData
+                })
+
                 // Update invoice with payment link
                 const updateResponse = await invoiceStore.updateInvoice({
                   id: invoiceData.value.id,
+                  invoice_date: invoiceData.value.invoice_date,
+                  customer_id: invoiceData.value.customer_id,
+                  invoice_number: invoiceData.value.invoice_number,
+                  discount: invoiceData.value.discount,
+                  discount_val: invoiceData.value.discount_val,
+                  sub_total: invoiceData.value.sub_total,
+                  total: invoiceData.value.total,
+                  tax: invoiceData.value.tax,
+                  template_name: invoiceData.value.template_name,
+                  items: invoiceData.value.items,
                   customFields: customFieldData
                 })
 

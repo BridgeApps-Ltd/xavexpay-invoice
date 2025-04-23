@@ -275,6 +275,16 @@ return [
             'ability' => '',
             'model' => ''
         ],
+        [
+            'title' => 'settings.menu_title.database',
+            'group' => '',
+            'name' => 'Database',
+            'link' => '/admin/settings/database',
+            'icon' => 'DatabaseIcon',
+            'owner_only' => true,
+            'ability' => '',
+            'model' => ''
+        ],
     ],
 
     /*

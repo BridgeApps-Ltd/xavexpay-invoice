@@ -107,6 +107,11 @@ use Crater\Http\Controllers\V1\Installation\RequirementsController;
 use Crater\Http\Controllers\V1\Webhook\CronJobController;
 use Illuminate\Support\Facades\Route;
 
+/* -- Added-- */
+use Crater\Http\Controllers\V1\Settings\DatabaseSettingsController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -544,6 +549,99 @@ Route::prefix('/v1')->group(function () {
             Route::get('/countries', CountriesController::class);
         });
     });
+
+
+    Route::group(['middleware' => ['auth', 'company'], 'prefix' => 'settings'], function () {
+        Route::get('/database', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'getSettings']);
+        Route::post('/database', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'saveSettings']);
+        Route::post('/database/test', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'testConnection']);
+        Route::post('/database/migrate', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'runMigrations']);
+        Route::get('/settings/database/check-migrations', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'checkMigrations']);
+    });
+
+    // Payment configuration endpoint
+    Route::get('/payment-config', function () {
+        return response()->json([
+            'domain' => config('payment.domain'),
+            'apiKey' => config('payment.api_key')
+        ]);
+    });
+
+    // Payment proxy routes
+    Route::post('/payment-intent', function (Request $request) {
+        try {
+            $paymentDomain = config('payment.domain');
+            $apiKey = config('payment.api_key');
+            
+            \Log::info('Payment Intent API Request:', [
+                'url' => "{$paymentDomain}/api/v1/payment_intent",
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => "Bearer {$apiKey}",
+                    'X-apikey' => $apiKey
+                ],
+                'body' => $request->all()
+            ]);
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => "Bearer {$apiKey}",
+                'X-apikey' => $apiKey
+            ])->post("{$paymentDomain}/api/v1/payment_intent", $request->all());
+
+            \Log::info('Payment Intent API Response:', [
+                'status' => $response->status(),
+                'headers' => $response->headers(),
+                'body' => $response->body()
+            ]);
+
+            // Return the plain text response with proper content type
+            return response($response->body(), $response->status())
+                ->header('Content-Type', 'text/plain');
+        } catch (\Exception $e) {
+            \Log::error('Payment Intent API Error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+
+    Route::get('/challenge-code', function (Request $request) {
+        try {
+            $paymentDomain = config('payment.domain');
+            $apiKey = config('payment.api_key');
+            
+            \Log::info('Challenge Code API Request:', [
+                'url' => "{$paymentDomain}/api/v1/challenge/code",
+                'headers' => [
+                    'Authorization' => "Bearer {$apiKey}",
+                    'X-apikey' => $apiKey
+                ],
+                'params' => $request->all()
+            ]);
+
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'X-apikey' => $apiKey
+            ])->get("{$paymentDomain}/api/v1/challenge/code", $request->all());
+
+            \Log::info('Challenge Code API Response:', [
+                'status' => $response->status(),
+                'headers' => $response->headers(),
+                'body' => $response->json()
+            ]);
+
+            return response()->json($response->json(), $response->status());
+        } catch (\Exception $e) {
+            \Log::error('Challenge Code API Error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
 });
+
 
 Route::get('/cron', CronJobController::class)->middleware('cron-job');

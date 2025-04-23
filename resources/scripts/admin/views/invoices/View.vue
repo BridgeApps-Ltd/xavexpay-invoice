@@ -1,13 +1,21 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { debounce } from 'lodash'
+import moment from 'moment'
+import axios from 'axios'
 
 import { useInvoiceStore } from '@/scripts/admin/stores/invoice'
 import { useModalStore } from '@/scripts/stores/modal'
 import { useUserStore } from '@/scripts/admin/stores/user'
 import { useDialogStore } from '@/scripts/stores/dialog'
+import { usePaymentStore } from '@/scripts/admin/stores/payment'
+import { useNotificationStore } from '@/scripts/stores/notification'
+import { useCompanyStore } from '@/scripts/admin/stores/company'
+import useUtils from '@/scripts/composables/useUtils'
+import { useCustomFieldStore } from '@/scripts/admin/stores/custom-field'
+import paymentConfig from '@/scripts/config/payment'
 
 import SendInvoiceModal from '@/scripts/admin/components/modal-components/SendInvoiceModal.vue'
 import InvoiceDropdown from '@/scripts/admin/components/dropdowns/InvoiceIndexDropdown.vue'
@@ -19,6 +27,11 @@ const modalStore = useModalStore()
 const invoiceStore = useInvoiceStore()
 const userStore = useUserStore()
 const dialogStore = useDialogStore()
+const paymentStore = usePaymentStore()
+const companyStore = useCompanyStore()
+const utils = useUtils()
+const customFieldStore = useCustomFieldStore()
+const notificationStore = useNotificationStore()
 
 const { t } = useI18n()
 const invoiceData = ref(null)
@@ -26,6 +39,8 @@ const route = useRoute()
 
 const isMarkAsSent = ref(false)
 const isLoading = ref(false)
+const paymentDomain = ref('')
+const paymentApiKey = ref('')
 
 const invoiceList = ref(null)
 const currentPageNumber = ref(1)
@@ -60,7 +75,7 @@ const shareableLink = computed(() => {
 
 const getCurrentInvoiceId = computed(() => {
   if (invoiceData.value && invoiceData.value.id) {
-    return invoice.value.id
+    return invoiceData.value.id
   }
   return null
 })
@@ -68,6 +83,17 @@ const getCurrentInvoiceId = computed(() => {
 watch(route, (to, from) => {
   if (to.name === 'invoices.view') {
     loadInvoice()
+  }
+})
+
+onMounted(async () => {
+  try {
+    // Fetch payment configuration from backend
+    const response = await axios.get('/api/v1/payment-config')
+    paymentDomain.value = response.data.domain
+    paymentApiKey.value = response.data.apiKey
+  } catch (error) {
+    console.error('Failed to fetch payment configuration:', error)
   }
 })
 
@@ -103,6 +129,297 @@ async function onSendInvoice(id) {
     id: invoiceData.value.id,
     data: invoiceData.value,
   })
+}
+
+async function onPayAsCash() {
+  dialogStore
+    .openDialog({
+      title: t('general.are_you_sure'),
+      message: t('invoices.pay_as_cash_confirmation'),
+      yesLabel: t('general.ok'),
+      noLabel: t('general.cancel'),
+      variant: 'primary',
+      hideNoButton: false,
+      size: 'lg',
+    })
+    .then(async (response) => {
+      if (response) {
+        try {
+          console.log('Getting next payment number...')
+          // Get next payment number with company ID
+          const nextPaymentNumber = await paymentStore.getNextNumber({
+            userId: invoiceData.value.customer_id,
+            model_id: invoiceData.value.id
+          }, true)
+          
+          console.log('Next payment number response:', nextPaymentNumber)
+          
+          // Create payment data
+          const paymentData = {
+            customer_id: invoiceData.value.customer_id,
+            invoice_id: invoiceData.value.id,
+            amount: invoiceData.value.total,
+            payment_date: moment().format('YYYY-MM-DD'),
+            payment_method_id: 1, // Assuming 1 is the ID for cash payment method
+            notes: t('invoices.paid_as_cash'),
+            payment_number: nextPaymentNumber.data.nextNumber,
+            company_id: invoiceData.value.company_id
+          }
+
+          console.log('Payment data being sent:', paymentData)
+
+          // Create payment
+          await paymentStore.addPayment(paymentData)
+          
+          // Refresh invoice data
+          await loadInvoice()
+          
+          // Show success notification
+          notificationStore.showNotification({
+            type: 'success',
+            message: t('invoices.payment_created_successfully'),
+          })
+        } catch (error) {
+          console.error('Error in onPayAsCash:', error)
+          notificationStore.showNotification({
+            type: 'error',
+            message: t('invoices.failed_to_create_payment'),
+          })
+        }
+      }
+    })
+}
+
+async function onGeneratePaymentLink() {
+  dialogStore
+    .openDialog({
+      title: t('general.are_you_sure'),
+      message: t('invoices.generate_payment_link_confirmation'),
+      yesLabel: t('general.ok'),
+      noLabel: t('general.cancel'),
+      variant: 'primary',
+      hideNoButton: false,
+      size: 'lg',
+    })
+    .then(async (response) => {
+      if (response) {
+        try {
+          console.log('Starting payment link generation process...')
+          
+          // Step 1: Call payment intent API through proxy
+          const paymentIntentUrl = '/api/v1/payment-intent'
+          console.log('Calling Payment Intent API:', {
+            url: paymentIntentUrl,
+            body: {
+              id: 0,
+              uniqueId: null,
+              contextId: `invoice # ${invoiceData.value.invoice_number}`,
+              amount: invoiceData.value.total / 100,
+              total: invoiceData.value.total / 100,
+              currency: invoiceData.value.currency.code,
+              tax: invoiceData.value.tax / 100,
+              description: `Payment for invoice ${invoiceData.value.invoice_number}`,
+              result: "",
+              message: "",
+              userId: invoiceData.value.customer.email,
+              context: "order",
+              tenantId: 1001,
+              status: "CREATED",
+              currencySymbol: invoiceData.value.currency.symbol
+            }
+          })
+
+          const paymentIntentResponse = await axios.post(paymentIntentUrl, {
+            id: 0,
+            uniqueId: null,
+            contextId: `invoice # ${invoiceData.value.invoice_number}`,
+            amount: invoiceData.value.total / 100,
+            total: invoiceData.value.total / 100,
+            currency: invoiceData.value.currency.code,
+            tax: invoiceData.value.tax / 100,
+            description: `Payment for invoice ${invoiceData.value.invoice_number}`,
+            result: "",
+            message: "",
+            userId: invoiceData.value.customer.email,
+            context: "order",
+            tenantId: 1001,
+            status: "CREATED",
+            currencySymbol: invoiceData.value.currency.symbol
+          })
+
+          console.log('Payment Intent API Response:', {
+            status: paymentIntentResponse.status,
+            data: paymentIntentResponse.data
+          })
+
+          if (paymentIntentResponse.status === 200 || paymentIntentResponse.status === 201) {
+            // Get the UUID directly from the response data since it's a plain text string
+            const uuid = paymentIntentResponse.data
+            console.log('Received UUID from Payment Intent API:', uuid)
+
+            if (!uuid) {
+              console.error('No UUID received from Payment Intent API')
+              notificationStore.showNotification({
+                type: 'error',
+                message: t('invoices.failed_to_generate_payment_link'),
+              })
+              return
+            }
+
+            // Step 2: Get challenge code through proxy
+            const challengeUrl = `/api/v1/challenge-code?uuid=${uuid}&src=email`
+            console.log('Calling Challenge Code API:', {
+              url: challengeUrl,
+              headers: {
+                'Authorization': `Bearer ${paymentApiKey.value}`,
+                'X-apikey': paymentApiKey.value
+              }
+            })
+
+            const challengeResponse = await axios.get(challengeUrl, {
+              headers: {
+                'Authorization': `Bearer ${paymentApiKey.value}`,
+                'X-apikey': paymentApiKey.value
+              }
+            })
+            
+            console.log('Challenge Code API Response:', {
+              status: challengeResponse.status,
+              data: challengeResponse.data
+            })
+
+            if (challengeResponse.status === 200 || challengeResponse.status === 201) {
+              // Check if response has the expected structure
+              if (!challengeResponse.data) {
+                console.error('Empty response from Challenge Code API')
+                notificationStore.showNotification({
+                  type: 'error',
+                  message: t('invoices.invalid_payment_link_response'),
+                })
+                return
+              }
+
+              // Get the URL from the response, defaulting to null if not present
+              const responseUrl = challengeResponse.data.url || null
+              if (!responseUrl) {
+                console.error('URL not found in Challenge Code API response:', challengeResponse.data)
+                notificationStore.showNotification({
+                  type: 'error',
+                  message: t('invoices.invalid_payment_link_response'),
+                })
+                return
+              }
+
+              // Construct the payment link by replacing 'null?' with 'pay.ps?'
+              const paymentLink = `${paymentDomain.value}/${responseUrl.replace('null?', 'pay.ps?')}`
+              console.log('Generated Payment Link:', paymentLink)
+
+              try {
+                // First fetch the custom field ID for PaymentLink
+                const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
+                  params: {
+                    model_type: 'Invoice',
+                    name: 'PaymentLink'
+                  }
+                })
+
+                if (!customFieldsResponse.data || !customFieldsResponse.data.data || !customFieldsResponse.data.data[0]) {
+                  throw new Error('PaymentLink custom field not found')
+                }
+
+                const paymentLinkFieldId = customFieldsResponse.data.data[0].id
+
+                // Store payment link in custom field
+                const customFieldData = {
+                  fields: [{
+                    id: paymentLinkFieldId,
+                    name: 'PaymentLink',
+                    value: paymentLink
+                  }]
+                }
+
+                console.log('Updating invoice with payment link:', {
+                  invoiceId: invoiceData.value.id,
+                  customFieldData: customFieldData
+                })
+
+                // Update invoice with payment link
+                const updateResponse = await invoiceStore.updateInvoice({
+                  id: invoiceData.value.id,
+                  invoice_date: invoiceData.value.invoice_date,
+                  customer_id: invoiceData.value.customer_id,
+                  invoice_number: invoiceData.value.invoice_number,
+                  discount: invoiceData.value.discount,
+                  discount_val: invoiceData.value.discount_val,
+                  sub_total: invoiceData.value.sub_total,
+                  total: invoiceData.value.total,
+                  tax: invoiceData.value.tax,
+                  template_name: invoiceData.value.template_name,
+                  items: invoiceData.value.items,
+                  customFields: customFieldData
+                })
+
+                console.log('Invoice Update Response:', {
+                  status: 'success',
+                  data: updateResponse
+                })
+
+                // Copy to clipboard
+                utils.copyTextToClipboard(paymentLink)
+                
+                // Show success notification
+                notificationStore.showNotification({
+                  type: 'success',
+                  message: t('invoices.payment_link_copied'),
+                })
+                
+                // Refresh invoice data
+                console.log('Refreshing invoice data...')
+                await loadInvoice()
+                console.log('Invoice data refreshed successfully')
+              } catch (error) {
+                console.error('Failed to update invoice:', error)
+                notificationStore.showNotification({
+                  type: 'error',
+                  message: t('invoices.failed_to_update_payment_link'),
+                })
+              }
+            } else {
+              console.error('Challenge Code API failed:', {
+                status: challengeResponse.status,
+                data: challengeResponse.data
+              })
+              notificationStore.showNotification({
+                type: 'error',
+                message: t('invoices.failed_to_generate_payment_link'),
+              })
+            }
+          } else {
+            console.error('Payment Intent API failed:', {
+              status: paymentIntentResponse.status,
+              data: paymentIntentResponse.data
+            })
+            notificationStore.showNotification({
+              type: 'error',
+              message: t('invoices.failed_to_generate_payment_link'),
+            })
+          }
+        } catch (error) {
+          console.error('Error in onGeneratePaymentLink:', {
+            error: error,
+            message: error.message,
+            response: error.response ? {
+              status: error.response.status,
+              data: error.response.data
+            } : null
+          })
+          notificationStore.showNotification({
+            type: 'error',
+            message: t('invoices.failed_to_generate_payment_link'),
+          })
+        }
+      }
+    })
 }
 
 function hasActiveUrl(id) {
@@ -254,10 +571,34 @@ onSearched = debounce(onSearched, 500)
             userStore.hasAbilities(abilities.SEND_INVOICE)
           "
           variant="primary"
-          class="text-sm"
+          class="text-sm mr-2"
           @click="onSendInvoice"
         >
           {{ $t('invoices.send_invoice') }}
+        </BaseButton>
+
+        <BaseButton
+          v-if="
+            invoiceData.status === 'DRAFT' &&
+            userStore.hasAbilities(abilities.CREATE_PAYMENT)
+          "
+          variant="primary"
+          class="text-sm"
+          @click="onPayAsCash"
+        >
+          {{ $t('invoices.pay_as_cash') }}
+        </BaseButton>
+
+        <BaseButton
+          v-if="
+            invoiceData.status === 'DRAFT' &&
+            userStore.hasAbilities(abilities.CREATE_PAYMENT)
+          "
+          variant="primary"
+          class="text-sm ml-2"
+          @click="onGeneratePaymentLink"
+        >
+          {{ $t('invoices.generate_payment_link') }}
         </BaseButton>
 
         <!-- Record Payment  -->

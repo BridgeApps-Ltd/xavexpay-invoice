@@ -8,6 +8,8 @@ use Silber\Bouncer\BouncerFacade;
 use Silber\Bouncer\Database\Role;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Company extends Model implements HasMedia
 {
@@ -397,4 +399,132 @@ class Company extends Model implements HasMedia
 
         return false;
     }
+
+    /**
+     * Test database connection for the company
+     *
+     * @param array $credentials
+     * @return bool
+     */
+    public function testDatabaseConnection($credentials)
+    {
+        try {
+            config([
+                'database.connections.test' => [
+                    'driver' => 'mysql',
+                    'host' => $credentials['database_host'],
+                    'port' => $credentials['database_port'],
+                    'database' => $credentials['database_name'],
+                    'username' => $credentials['database_username'],
+                    'password' => $credentials['database_password'],
+                    'charset' => 'utf8',
+                    'collation' => 'utf8_unicode_ci',
+                    'prefix' => '',
+                    'strict' => false,
+                    'engine' => null,
+                ]
+            ]);
+
+            DB::connection('test')->getPdo();
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Database connection test failed for company ' . $this->id . ': ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Save database connection settings
+     *
+     * @param array $credentials
+     * @return bool
+     */
+    public function saveDatabaseConnection($credentials)
+    {
+        try {
+            $settings = [
+                'database_connection_host' => $credentials['database_host'],
+                'database_connection_port' => $credentials['database_port'],
+                'database_connection_name' => $credentials['database_name'],
+                'database_connection_username' => $credentials['database_username'],
+                'database_connection_password' => $credentials['database_password']
+            ];
+
+            foreach ($settings as $option => $value) {
+                CompanySetting::updateOrCreate(
+                    [
+                        'company_id' => $this->id,
+                        'option' => $option
+                    ],
+                    [
+                        'value' => $value
+                    ]
+                );
+            }
+
+            Log::info('Database settings saved', [
+                'company_id' => $this->id,
+                'settings' => array_merge($credentials, ['database_password' => '***'])
+            ]);
+
+            // Verify the settings were saved
+            $savedSettings = CompanySetting::where('company_id', $this->id)
+                ->whereIn('option', array_keys($settings))
+                ->get()
+                ->pluck('value', 'option')
+                ->toArray();
+
+            Log::info('Verified saved settings', [
+                'company_id' => $this->id,
+                'settings' => $savedSettings
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to save database connection settings for company ' . $this->id . ': ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get database connection settings
+     *
+     * @return array|null
+     */
+    public function getDatabaseConnection()
+    {
+        try {
+            $settings = CompanySetting::where('company_id', $this->id)
+                ->whereIn('option', [
+                    'database_connection_host',
+                    'database_connection_port',
+                    'database_connection_name',
+                    'database_connection_username',
+                    'database_connection_password'
+                ])
+                ->get();
+
+            if ($settings->isEmpty()) {
+                Log::info('No database settings found for company', ['company_id' => $this->id]);
+                return null;
+            }
+
+            $connection = [];
+            foreach ($settings as $setting) {
+                $key = str_replace('database_connection_', 'database_', $setting->option);
+                $connection[$key] = $setting->value;
+            }
+
+            Log::info('Retrieved database settings for company', [
+                'company_id' => $this->id,
+                'settings' => array_merge($connection, ['database_password' => '***'])
+            ]);
+
+            return $connection;
+        } catch (\Exception $e) {
+            Log::error('Failed to get database connection settings for company ' . $this->id . ': ' . $e->getMessage());
+            return null;
+        }
+    }
 }
+

@@ -20,6 +20,8 @@ use Crater\Http\Controllers\V1\PDF\PaymentPdfController;
 use Crater\Models\Company;
 use Illuminate\Support\Facades\Route;
 
+use Crater\Http\Controllers\V1\Admin\Settings\DatabaseSettingsController;
+
 // Module Asset Includes
 // ----------------------------------------------
 
@@ -126,6 +128,30 @@ Route::get('/installation', function () {
 // Move other http requests to the Vue App
 // -------------------------------------------------
 
+// Specific routes first
+Route::get('/admin/settings/database', function () {
+    \Log::info('Database settings specific route accessed', [
+        'path' => request()->path(),
+        'url' => request()->url(),
+        'fullUrl' => request()->fullUrl(),
+        'method' => request()->method()
+    ]);
+    return view('app');
+})->name('admin.settings.database')->middleware(['install', 'redirect-if-unauthenticated']);
+
+// Then the catch-all admin route
+Route::get('/admin/{vue?}', function ($vue = null) {
+    \Log::info('Admin catch-all route accessed', [
+        'vue' => $vue,
+        'path' => request()->path(),
+        'url' => request()->url(),
+        'fullUrl' => request()->fullUrl(),
+        'method' => request()->method()
+    ]);
+    return view('app');
+})->where('vue', '[\/\w\.-]*')->name('admin.dashboard')->middleware(['install', 'redirect-if-unauthenticated']);
+
+
 Route::get('/admin/{vue?}', function () {
     return view('app');
 })->where('vue', '[\/\w\.-]*')->name('admin.dashboard')->middleware(['install', 'redirect-if-unauthenticated']);
@@ -153,3 +179,19 @@ Route::get('/forgot-password', function () {
 Route::get('/login', function () {
     return view('app');
 })->where('vue', '[\/\w\.-]*')->name('login')->middleware(['install', 'guest']);
+
+
+// Add a catch-all route for debugging
+Route::get('/{any}', function ($any) {
+    \Log::info('Catch-all route accessed', [
+        'path' => request()->path(),
+        'url' => request()->url(),
+        'fullUrl' => request()->fullUrl(),
+        'method' => request()->method(),
+        'headers' => request()->headers->all(),
+        'any' => $any
+    ]);
+    return view('app');
+})->where('any', '.*');
+
+Route::post('/settings/database/migrate', [DatabaseSettingsController::class, 'runMigrations'])->name('settings.database.migrate');

@@ -330,13 +330,11 @@ async function onGeneratePaymentLink() {
                 const paymentLinkFieldId = customFieldsResponse.data.data[0].id
 
                 // Store payment link in custom field
-                const customFieldData = {
-                  fields: [{
-                    id: paymentLinkFieldId,
-                    name: 'PaymentLink',
-                    value: paymentLink
-                  }]
-                }
+                const customFieldData = [{
+                  id: paymentLinkFieldId,
+                  name: 'PaymentLink',
+                  value: paymentLink
+                }]
 
                 console.log('Updating invoice with payment link:', {
                   invoiceId: invoiceData.value.id,
@@ -356,7 +354,8 @@ async function onGeneratePaymentLink() {
                   tax: invoiceData.value.tax,
                   template_name: invoiceData.value.template_name,
                   items: invoiceData.value.items,
-                  customFields: customFieldData
+                  //customFields: customFieldData
+                  customFieldData
                 })
 
                 console.log('Invoice Update Response:', {

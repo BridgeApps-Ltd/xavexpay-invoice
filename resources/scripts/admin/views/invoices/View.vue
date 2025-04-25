@@ -296,7 +296,7 @@ async function onGeneratePaymentLink() {
                   type: 'error',
                   message: t('invoices.invalid_payment_link_response'),
                 })
-                return
+                return 
               }
 
               // Get the URL from the response, defaulting to null if not present
@@ -315,19 +315,47 @@ async function onGeneratePaymentLink() {
               console.log('Generated Payment Link:', paymentLink)
 
               try {
-                // First fetch the custom field ID for PaymentLink
+                // First fetch all custom fields for Invoice type
                 const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
                   params: {
-                    model_type: 'Invoice',
-                    name: 'PaymentLink'
+                    model_type: 'Invoice'
                   }
                 })
 
-                if (!customFieldsResponse.data || !customFieldsResponse.data.data || !customFieldsResponse.data.data[0]) {
+                console.log('==>> Retrieved all custom fields:', {
+                  totalFields: customFieldsResponse.data.data.length,
+                  fields: customFieldsResponse.data.data.map(field => ({
+                    id: field.id,
+                    name: field.name,
+                    type: field.type,
+                    model_type: field.model_type
+                  }))
+                })
+
+                if (!customFieldsResponse.data || !customFieldsResponse.data.data) {
+                  throw new Error('No custom fields found for Invoice type')
+                }
+
+                // Find the PaymentLink custom field by name
+                const paymentLinkField = customFieldsResponse.data.data.find(
+                  field => field.name === 'PaymentLink'
+                )
+
+                console.log('==>> Found PaymentLink field:', {
+                  found: !!paymentLinkField,
+                  field: paymentLinkField ? {
+                    id: paymentLinkField.id,
+                    name: paymentLinkField.name,
+                    type: paymentLinkField.type,
+                    model_type: paymentLinkField.model_type
+                  } : null
+                })
+
+                if (!paymentLinkField) {
                   throw new Error('PaymentLink custom field not found')
                 }
 
-                const paymentLinkFieldId = customFieldsResponse.data.data[0].id
+                const paymentLinkFieldId = paymentLinkField.id
 
                 // Store payment link in custom field
                 const customFieldData = [{
@@ -354,8 +382,7 @@ async function onGeneratePaymentLink() {
                   tax: invoiceData.value.tax,
                   template_name: invoiceData.value.template_name,
                   items: invoiceData.value.items,
-                  //customFields: customFieldData
-                  customFieldData
+                  customFields: customFieldData
                 })
 
                 console.log('Invoice Update Response:', {

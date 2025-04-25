@@ -1531,5 +1531,7 @@
   "pdf_bill_to": "Bill to,",
   "pdf_ship_to": "Ship to,",
   "pdf_received_from": "Received from:",
-  "pdf_tax_label": "Tax"
+  "pdf_tax_label": "Tax",
+  "pdf_payment_link": "Payment Link",
+  "pdf_terms_and_conditions": "Terms & Conditions"
 }

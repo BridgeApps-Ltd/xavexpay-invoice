@@ -273,6 +273,23 @@
             padding-bottom: 10px;
         }
 
+        /* -- Payments -- */
+        .payments-link {
+            margin-top: 20px;
+            margin-left: 30px;
+        }
+        .payments-label {
+            font-size: 15px;
+            line-height: 22px;
+            letter-spacing: 0.05em;
+            color: #040405;
+        }
+        .payments-link-btn{
+            font-size: 12px; 
+            line-height: 15px; 
+            color: #595959; 
+            margin-top: 5px;
+        }
         /* -- Helpers -- */
 
         .text-primary {
@@ -407,6 +424,21 @@
                 {!! $notes !!}
             @endif
         </div>
+
+        @if ($paymentLinkField && $paymentLinkField->defaultAnswer)
+            <div class="payment-link">
+                <div class="payments-label">
+                    @lang('pdf_payment_link')
+                </div>
+                <div class="payments-link-btn">
+                    <button class="payments-link-btn-link">
+                        <a href="{{ $paymentLinkField->defaultAnswer }}" target="_blank">
+                            Payment Link
+                        </a>
+                    </button>
+                </div>
+            </div>
+        @endif
     </div>
 </body>
 

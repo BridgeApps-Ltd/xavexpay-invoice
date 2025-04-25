@@ -365,6 +365,13 @@ class Invoice extends Model implements HasMedia
 
     public function updateInvoice($request)
     {
+        \Log::info('==>> Invoice Update Request:', [
+            'invoice_id' => $this->id,
+            'request_data' => $request->all(),
+            'custom_fields' => $request->customFields ?? null,
+            'raw_request' => $request->getContent()
+        ]);
+
         $serial = (new SerialNumberFormatter())
             ->setModel($this)
             ->setCompany($this->company_id)
@@ -397,6 +404,11 @@ class Invoice extends Model implements HasMedia
 
         $this->changeInvoiceStatus($data['due_amount']);
 
+        \Log::info('==>> Updating invoice with data:', [
+            'invoice_id' => $this->id,
+            'update_data' => $data
+        ]);
+
         $this->update($data);
 
         $company_currency = CompanySetting::getSetting('currency', $request->header('company'));
@@ -422,7 +434,17 @@ class Invoice extends Model implements HasMedia
             self::createTaxes($this, $request->taxes);
         }
 
+        \Log::info('==>> Checking custom fields before update:', [
+            'has_custom_fields' => $request->has('customFields'),
+            'custom_fields' => $request->customFields,
+            'all_request_data' => $request->all()
+        ]);
+
         if ($request->customFields) {
+            \Log::info('==>> Updating custom fields:', [
+                'invoice_id' => $this->id,
+                'custom_fields' => $request->customFields
+            ]);
             $this->updateCustomFields($request->customFields);
         }
 
@@ -432,8 +454,7 @@ class Invoice extends Model implements HasMedia
             'items.fields.customField',
             'customer',
             'taxes'
-        ])
-            ->find($this->id);
+        ]) ->find($this->id);
 
         return $invoice;
     }
@@ -569,6 +590,20 @@ class Invoice extends Model implements HasMedia
 
         $logo = $company->logo_path;
 
+        // Load the PaymentLink field with its value
+        $paymentLinkField = $this->fields()
+            ->whereHas('customField', function($query) {
+                $query->where('slug', 'CUSTOM_INVOICE_PAYMENTLINK');
+            })
+            ->with('customField')
+            ->first();
+
+        \Log::info('==>> PaymentLink field in PDF:', [
+            'invoice_id' => $this->id,
+            'payment_link_field' => $paymentLinkField,
+            'payment_link_value' => $paymentLinkField ? $paymentLinkField->defaultAnswer : null
+        ]);
+
         view()->share([
             'invoice' => $this,
             'customFields' => $customFields,
@@ -578,6 +613,7 @@ class Invoice extends Model implements HasMedia
             'notes' => $this->getNotes(),
             'logo' => $logo ?? null,
             'taxes' => $taxes,
+            'paymentLinkField' => $paymentLinkField,
         ]);
 
         if (request()->has('preview')) {

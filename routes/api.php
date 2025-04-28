@@ -62,6 +62,7 @@ use Crater\Http\Controllers\V1\Admin\Payment\PaymentMethodsController;
 use Crater\Http\Controllers\V1\Admin\Payment\PaymentsController;
 use Crater\Http\Controllers\V1\Admin\Payment\SendPaymentController;
 use Crater\Http\Controllers\V1\Admin\Payment\SendPaymentPreviewController;
+use Crater\Http\Controllers\V1\Payment\PaymentStatusController;
 use Crater\Http\Controllers\V1\Admin\RecurringInvoice\RecurringInvoiceController;
 use Crater\Http\Controllers\V1\Admin\RecurringInvoice\RecurringInvoiceFrequencyController;
 use Crater\Http\Controllers\V1\Admin\Role\AbilitiesController;
@@ -641,6 +642,8 @@ Route::prefix('/v1')->group(function () {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     });
+
+    Route::post('/payment/status', PaymentStatusController::class);
 });
 
 

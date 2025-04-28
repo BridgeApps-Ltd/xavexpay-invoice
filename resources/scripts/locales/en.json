@@ -455,7 +455,8 @@
     "generate_payment_link": "Generate Payment Link",
     "generate_payment_link_confirmation": "Are you sure you want to generate a payment link for this invoice?",
     "payment_link_generated": "Payment link generated",
-    "payment_link_copied": "Payment link copied to clipboard"
+    "payment_link_copied": "Payment link copied to clipboard",
+    "failed_to_generate_payment_link": "Failed to generate payment link. Please try again."
   },
   "recurring_invoices": {
     "title": "Recurring Invoices",

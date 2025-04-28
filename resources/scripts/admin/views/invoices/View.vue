@@ -213,7 +213,7 @@ async function onGeneratePaymentLink() {
             body: {
               id: 0,
               uniqueId: null,
-              contextId: `invoice # ${invoiceData.value.invoice_number}`,
+              contextId: invoiceData.value.invoice_number,
               amount: invoiceData.value.total / 100,
               total: invoiceData.value.total / 100,
               currency: invoiceData.value.currency.code,
@@ -229,206 +229,233 @@ async function onGeneratePaymentLink() {
             }
           })
 
-          const paymentIntentResponse = await axios.post(paymentIntentUrl, {
-            id: 0,
-            uniqueId: null,
-            contextId: `invoice # ${invoiceData.value.invoice_number}`,
-            amount: invoiceData.value.total / 100,
-            total: invoiceData.value.total / 100,
-            currency: invoiceData.value.currency.code,
-            tax: invoiceData.value.tax / 100,
-            description: `Payment for invoice ${invoiceData.value.invoice_number}`,
-            result: "",
-            message: "",
-            userId: invoiceData.value.customer.email,
-            context: "order",
-            tenantId: 1001,
-            status: "CREATED",
-            currencySymbol: invoiceData.value.currency.symbol
-          })
-
-          console.log('Payment Intent API Response:', {
-            status: paymentIntentResponse.status,
-            data: paymentIntentResponse.data
-          })
-
-          if (paymentIntentResponse.status === 200 || paymentIntentResponse.status === 201) {
-            // Get the UUID directly from the response data since it's a plain text string
-            const uuid = paymentIntentResponse.data
-            console.log('Received UUID from Payment Intent API:', uuid)
-
-            if (!uuid) {
-              console.error('No UUID received from Payment Intent API')
-              notificationStore.showNotification({
-                type: 'error',
-                message: t('invoices.failed_to_generate_payment_link'),
-              })
-              return
-            }
-
-            // Step 2: Get challenge code through proxy
-            const challengeUrl = `/api/v1/challenge-code?uuid=${uuid}&src=email`
-            console.log('Calling Challenge Code API:', {
-              url: challengeUrl,
-              headers: {
-                'Authorization': `Bearer ${paymentApiKey.value}`,
-                'X-apikey': paymentApiKey.value
-              }
+          try {
+            const paymentIntentResponse = await axios.post(paymentIntentUrl, {
+              id: 0,
+              uniqueId: null,
+              contextId: invoiceData.value.invoice_number,
+              amount: invoiceData.value.total / 100,
+              total: invoiceData.value.total / 100,
+              currency: invoiceData.value.currency.code,
+              tax: invoiceData.value.tax / 100,
+              description: `Payment for invoice ${invoiceData.value.invoice_number}`,
+              result: "",
+              message: "",
+              userId: invoiceData.value.customer.email,
+              context: "order",
+              tenantId: 1001,
+              status: "CREATED",
+              currencySymbol: invoiceData.value.currency.symbol
             })
 
-            const challengeResponse = await axios.get(challengeUrl, {
-              headers: {
-                'Authorization': `Bearer ${paymentApiKey.value}`,
-                'X-apikey': paymentApiKey.value
-              }
-            })
-            
-            console.log('Challenge Code API Response:', {
-              status: challengeResponse.status,
-              data: challengeResponse.data
+            console.log('Payment Intent API Response:', {
+              status: paymentIntentResponse.status,
+              data: paymentIntentResponse.data
             })
 
-            if (challengeResponse.status === 200 || challengeResponse.status === 201) {
-              // Check if response has the expected structure
-              if (!challengeResponse.data) {
-                console.error('Empty response from Challenge Code API')
+            if (paymentIntentResponse.status === 200 || paymentIntentResponse.status === 201) {
+              // Get the UUID directly from the response data since it's a plain text string
+              const uuid = paymentIntentResponse.data
+              console.log('Received UUID from Payment Intent API:', uuid)
+
+              if (!uuid) {
+                console.error('No UUID received from Payment Intent API')
                 notificationStore.showNotification({
                   type: 'error',
-                  message: t('invoices.invalid_payment_link_response'),
-                })
-                return 
-              }
-
-              // Get the URL from the response, defaulting to null if not present
-              const responseUrl = challengeResponse.data.url || null
-              if (!responseUrl) {
-                console.error('URL not found in Challenge Code API response:', challengeResponse.data)
-                notificationStore.showNotification({
-                  type: 'error',
-                  message: t('invoices.invalid_payment_link_response'),
+                  message: t('invoices.failed_to_generate_payment_link'),
                 })
                 return
               }
 
-              // Construct the payment link by replacing 'null?' with 'pay.ps?'
-              const paymentLink = `${paymentDomain.value}/${responseUrl.replace('null?', 'pay.ps?')}`
-              console.log('Generated Payment Link:', paymentLink)
+              // Step 2: Get challenge code through proxy
+              const challengeUrl = `/api/v1/challenge-code?uuid=${uuid}&src=email`
+              console.log('Calling Challenge Code API:', {
+                url: challengeUrl,
+                headers: {
+                  'Authorization': `Bearer ${paymentApiKey.value}`,
+                  'X-apikey': paymentApiKey.value
+                }
+              })
 
-              try {
-                // First fetch all custom fields for Invoice type
-                const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
-                  params: {
-                    model_type: 'Invoice'
+              const challengeResponse = await axios.get(challengeUrl, {
+                headers: {
+                  'Authorization': `Bearer ${paymentApiKey.value}`,
+                  'X-apikey': paymentApiKey.value
+                }
+              })
+              
+              console.log('Challenge Code API Response:', {
+                status: challengeResponse.status,
+                data: challengeResponse.data
+              })
+
+              if (challengeResponse.status === 200 || challengeResponse.status === 201) {
+                // Check if response has the expected structure
+                if (!challengeResponse.data) {
+                  console.error('Empty response from Challenge Code API')
+                  notificationStore.showNotification({
+                    type: 'error',
+                    message: t('invoices.invalid_payment_link_response'),
+                  })
+                  return 
+                }
+
+                // Get the URL from the response, defaulting to null if not present
+                const responseUrl = challengeResponse.data.url || null
+                if (!responseUrl) {
+                  console.error('URL not found in Challenge Code API response:', challengeResponse.data)
+                  notificationStore.showNotification({
+                    type: 'error',
+                    message: t('invoices.invalid_payment_link_response'),
+                  })
+                  return
+                }
+
+                // Construct the payment link by replacing 'null?' with 'pay.ps?'
+                const paymentLink = `${paymentDomain.value}/${responseUrl.replace('null?', 'pay.ps?')}`
+                console.log('Generated Payment Link:', paymentLink)
+
+                try {
+                  // First fetch all custom fields for Invoice type
+                  const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
+                    params: {
+                      model_type: 'Invoice'
+                    }
+                  })
+
+                  console.log('==>> Retrieved all custom fields:', {
+                    totalFields: customFieldsResponse.data.data.length,
+                    fields: customFieldsResponse.data.data.map(field => ({
+                      id: field.id,
+                      name: field.name,
+                      type: field.type,
+                      model_type: field.model_type
+                    }))
+                  })
+
+                  if (!customFieldsResponse.data || !customFieldsResponse.data.data) {
+                    throw new Error('No custom fields found for Invoice type')
                   }
-                })
 
-                console.log('==>> Retrieved all custom fields:', {
-                  totalFields: customFieldsResponse.data.data.length,
-                  fields: customFieldsResponse.data.data.map(field => ({
-                    id: field.id,
-                    name: field.name,
-                    type: field.type,
-                    model_type: field.model_type
-                  }))
-                })
+                  // Find the PaymentLink custom field by name
+                  const paymentLinkField = customFieldsResponse.data.data.find(
+                    field => field.name === 'PaymentLink'
+                  )
 
-                if (!customFieldsResponse.data || !customFieldsResponse.data.data) {
-                  throw new Error('No custom fields found for Invoice type')
+                  console.log('==>> Found PaymentLink field:', {
+                    found: !!paymentLinkField,
+                    field: paymentLinkField ? {
+                      id: paymentLinkField.id,
+                      name: paymentLinkField.name,
+                      type: paymentLinkField.type,
+                      model_type: paymentLinkField.model_type
+                    } : null
+                  })
+
+                  if (!paymentLinkField) {
+                    throw new Error('PaymentLink custom field not found')
+                  }
+
+                  const paymentLinkFieldId = paymentLinkField.id
+
+                  // Store payment link in custom field
+                  const customFieldData = [{
+                    id: paymentLinkFieldId,
+                    name: 'PaymentLink',
+                    value: paymentLink
+                  }]
+
+                  console.log('Updating invoice with payment link:', {
+                    invoiceId: invoiceData.value.id,
+                    customFieldData: customFieldData
+                  })
+
+                  // Update invoice with payment link
+                  const updateResponse = await invoiceStore.updateInvoice({
+                    id: invoiceData.value.id,
+                    invoice_date: invoiceData.value.invoice_date,
+                    customer_id: invoiceData.value.customer_id,
+                    invoice_number: invoiceData.value.invoice_number,
+                    discount: invoiceData.value.discount,
+                    discount_val: invoiceData.value.discount_val,
+                    sub_total: invoiceData.value.sub_total,
+                    total: invoiceData.value.total,
+                    tax: invoiceData.value.tax,
+                    template_name: invoiceData.value.template_name,
+                    items: invoiceData.value.items,
+                    customFields: customFieldData
+                  })
+
+                  console.log('Invoice Update Response:', {
+                    status: 'success',
+                    data: updateResponse
+                  })
+
+                  // Copy to clipboard
+                  utils.copyTextToClipboard(paymentLink)
+                  
+                  // Show success notification
+                  notificationStore.showNotification({
+                    type: 'success',
+                    message: t('invoices.payment_link_copied'),
+                  })
+                  
+                  // Refresh invoice data
+                  console.log('Refreshing invoice data...')
+                  await loadInvoice()
+                  console.log('Invoice data refreshed successfully')
+                } catch (error) {
+                  console.error('Failed to update invoice:', error)
+                  notificationStore.showNotification({
+                    type: 'error',
+                    message: t('invoices.failed_to_update_payment_link'),
+                  })
                 }
-
-                // Find the PaymentLink custom field by name
-                const paymentLinkField = customFieldsResponse.data.data.find(
-                  field => field.name === 'PaymentLink'
-                )
-
-                console.log('==>> Found PaymentLink field:', {
-                  found: !!paymentLinkField,
-                  field: paymentLinkField ? {
-                    id: paymentLinkField.id,
-                    name: paymentLinkField.name,
-                    type: paymentLinkField.type,
-                    model_type: paymentLinkField.model_type
-                  } : null
+              } else {
+                console.error('Challenge Code API failed:', {
+                  status: challengeResponse.status,
+                  data: challengeResponse.data
                 })
-
-                if (!paymentLinkField) {
-                  throw new Error('PaymentLink custom field not found')
-                }
-
-                const paymentLinkFieldId = paymentLinkField.id
-
-                // Store payment link in custom field
-                const customFieldData = [{
-                  id: paymentLinkFieldId,
-                  name: 'PaymentLink',
-                  value: paymentLink
-                }]
-
-                console.log('Updating invoice with payment link:', {
-                  invoiceId: invoiceData.value.id,
-                  customFieldData: customFieldData
-                })
-
-                // Update invoice with payment link
-                const updateResponse = await invoiceStore.updateInvoice({
-                  id: invoiceData.value.id,
-                  invoice_date: invoiceData.value.invoice_date,
-                  customer_id: invoiceData.value.customer_id,
-                  invoice_number: invoiceData.value.invoice_number,
-                  discount: invoiceData.value.discount,
-                  discount_val: invoiceData.value.discount_val,
-                  sub_total: invoiceData.value.sub_total,
-                  total: invoiceData.value.total,
-                  tax: invoiceData.value.tax,
-                  template_name: invoiceData.value.template_name,
-                  items: invoiceData.value.items,
-                  customFields: customFieldData
-                })
-
-                console.log('Invoice Update Response:', {
-                  status: 'success',
-                  data: updateResponse
-                })
-
-                // Copy to clipboard
-                utils.copyTextToClipboard(paymentLink)
-                
-                // Show success notification
-                notificationStore.showNotification({
-                  type: 'success',
-                  message: t('invoices.payment_link_copied'),
-                })
-                
-                // Refresh invoice data
-                console.log('Refreshing invoice data...')
-                await loadInvoice()
-                console.log('Invoice data refreshed successfully')
-              } catch (error) {
-                console.error('Failed to update invoice:', error)
                 notificationStore.showNotification({
                   type: 'error',
-                  message: t('invoices.failed_to_update_payment_link'),
+                  message: t('invoices.failed_to_generate_payment_link'),
                 })
               }
             } else {
-              console.error('Challenge Code API failed:', {
-                status: challengeResponse.status,
-                data: challengeResponse.data
+              console.error('Payment Intent API failed:', {
+                status: paymentIntentResponse.status,
+                data: paymentIntentResponse.data
               })
               notificationStore.showNotification({
                 type: 'error',
                 message: t('invoices.failed_to_generate_payment_link'),
               })
             }
-          } else {
-            console.error('Payment Intent API failed:', {
-              status: paymentIntentResponse.status,
-              data: paymentIntentResponse.data
+          } catch (paymentError) {
+            console.error('Payment Intent API Error:', {
+              error: paymentError,
+              message: paymentError.message,
+              response: paymentError.response ? {
+                status: paymentError.response.status,
+                data: paymentError.response.data
+              } : null
             })
-            notificationStore.showNotification({
-              type: 'error',
-              message: t('invoices.failed_to_generate_payment_link'),
-            })
+
+            // Check if it's a connection error
+            if (paymentError.message.includes('Failed to connect') || 
+                paymentError.message.includes('Couldn\'t connect to server') ||
+                paymentError.message.includes('cURL error 7')) {
+              notificationStore.showNotification({
+                type: 'error',
+                message: t('invoices.payment_service_unavailable'),
+              })
+            } else {
+              notificationStore.showNotification({
+                type: 'error',
+                message: t('invoices.failed_to_generate_payment_link'),
+              })
+            }
+            return
           }
         } catch (error) {
           console.error('Error in onGeneratePaymentLink:', {

@@ -4,6 +4,7 @@
 <head>
     <title>@lang('pdf_invoice_label') - {{ $invoice->invoice_number }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style type="text/css">
         /* -- Base -- */
@@ -271,6 +272,8 @@
             white-space: nowrap;
             height: 19.87px;
             padding-bottom: 10px;
+            font-weight: 500;
+            margin-bottom: 4px;
         }
 
         /* -- Payments -- */
@@ -289,7 +292,33 @@
             line-height: 15px; 
             color: #595959; 
             margin-top: 5px;
+
         }
+
+        .payments-link-btn-link{
+            color: #040405;
+            background-color:rgb(241, 243, 111);
+            border: solid 1px rgb(189, 186, 6);
+            padding: 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .payments-link-btn-link a {
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 15px;
+            color: #595959;
+            margin-top: 5px;
+        }
+
+        .payment-icon {
+            margin-right: 5px;
+            font-size: 14px;
+            font-family: "Font Awesome 6 Free";
+        }
+
         /* -- Helpers -- */
 
         .text-primary {
@@ -341,6 +370,30 @@
 
         .pl-0 {
             padding-left: 0;
+        }
+
+        .payment-terms {
+            margin-top: 20px;
+            margin-left: 30px;
+        }
+
+        .payment-terms-label {
+            font-size: 15px;
+            line-height: 22px;
+            letter-spacing: 0.05em;
+            color: #040405;
+        }
+
+        .payment-terms-content {
+            font-size: 12px; 
+            line-height: 15px; 
+            color: #595959; 
+            margin-top: 5px;
+        }
+
+        .payment-link {
+            margin-top: 20px;
+            margin-left: 30px;
         }
 
     </style>
@@ -425,6 +478,21 @@
             @endif
         </div>
 
+        @if($invoice->fields && $invoice->fields->filter(function($field) {
+            return $field->customField && $field->customField->name === 'PaymentTerms';
+        })->first())
+            <div class="payment-terms">
+                <div class="payment-terms-label">
+                    @lang('pdf_payment_terms')
+                </div>
+                <div class="payment-terms-content">
+                    {!! nl2br($invoice->fields->filter(function($field) {
+                        return $field->customField && $field->customField->name === 'PaymentTerms';
+                    })->first()->default_answer) !!}
+                </div>
+            </div>
+        @endif
+
         @if ($paymentLinkField && $paymentLinkField->defaultAnswer)
             <div class="payment-link">
                 <div class="payments-label">
@@ -433,7 +501,7 @@
                 <div class="payments-link-btn">
                     <button class="payments-link-btn-link">
                         <a href="{{ $paymentLinkField->defaultAnswer }}" target="_blank">
-                            Payment Link
+                            Click here to Pay Securely &nbsp;<span class="payment-icon"><i class="fas fa-lock"></i></span>
                         </a>
                     </button>
                 </div>

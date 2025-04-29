@@ -17,6 +17,7 @@ use Nwidart\Modules\Facades\Module;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Support\Facades\Log;
 
 class Invoice extends Model implements HasMedia
 {
@@ -365,11 +366,10 @@ class Invoice extends Model implements HasMedia
 
     public function updateInvoice($request)
     {
-        \Log::info('==>> Invoice Update Request:', [
-            'invoice_id' => $this->id,
-            'request_data' => $request->all(),
-            'custom_fields' => $request->customFields ?? null,
-            'raw_request' => $request->getContent()
+        Log::info('==>> Invoice Update - Request Data:', [
+            'request' => $request,
+            'customFields' => $request['customFields'] ?? null,
+            'hasCustomFields' => isset($request['customFields'])
         ]);
 
         $serial = (new SerialNumberFormatter())
@@ -404,7 +404,7 @@ class Invoice extends Model implements HasMedia
 
         $this->changeInvoiceStatus($data['due_amount']);
 
-        \Log::info('==>> Updating invoice with data:', [
+        Log::info('==>> Updating invoice with data:', [
             'invoice_id' => $this->id,
             'update_data' => $data
         ]);
@@ -434,18 +434,18 @@ class Invoice extends Model implements HasMedia
             self::createTaxes($this, $request->taxes);
         }
 
-        \Log::info('==>> Checking custom fields before update:', [
+        Log::info('==>> Checking custom fields before update:', [
             'has_custom_fields' => $request->has('customFields'),
             'custom_fields' => $request->customFields,
             'all_request_data' => $request->all()
         ]);
 
-        if ($request->customFields) {
-            \Log::info('==>> Updating custom fields:', [
-                'invoice_id' => $this->id,
-                'custom_fields' => $request->customFields
+        if (isset($request['customFields'])) {
+            Log::info('==>> Processing custom fields:', [
+                'fields' => $request['customFields']
             ]);
-            $this->updateCustomFields($request->customFields);
+            $this->updateCustomFields($request['customFields']);
+            Log::info('==>> Custom fields processing complete');
         }
 
         $invoice = Invoice::with([
@@ -598,7 +598,7 @@ class Invoice extends Model implements HasMedia
             ->with('customField')
             ->first();
 
-        \Log::info('==>> PaymentLink field in PDF:', [
+        Log::info('==>> PaymentLink field in PDF:', [
             'invoice_id' => $this->id,
             'payment_link_field' => $paymentLinkField,
             'payment_link_value' => $paymentLinkField ? $paymentLinkField->defaultAnswer : null

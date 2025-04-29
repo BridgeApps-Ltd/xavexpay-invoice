@@ -10,14 +10,16 @@
       width="372"
       height="81.333336"
       preserveAspectRatio="none"
-      xlink:href="/img/logos/invvex-logo-white.svg"
+      :xlink:href="logoUrl"
       fill="url(#logoGradient)"
     />
   </svg>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   darkColor: {
     type: String,
     default: 'rgba(var(--color-primary-500), var(--tw-text-opacity))',
@@ -26,5 +28,9 @@ defineProps({
     type: String,
     default: 'rgba(var(--color-primary-400), var(--tw-text-opacity))',
   },
+})
+
+const logoUrl = computed(() => {
+  return new URL('../../../../public/img/logos/invvex-logo-white.svg', import.meta.url).href
 })
 </script>

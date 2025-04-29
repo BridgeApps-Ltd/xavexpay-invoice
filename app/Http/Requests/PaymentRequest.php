@@ -6,6 +6,7 @@ use Crater\Models\CompanySetting;
 use Crater\Models\Customer;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class PaymentRequest extends FormRequest
 {
@@ -80,12 +81,24 @@ class PaymentRequest extends FormRequest
 
     public function getPaymentPayload()
     {
+        Log::info('PaymentRequest object state:', [
+            'request_data' => $this->all(),
+            'headers' => $this->headers->all(),
+            'method' => $this->method(),
+            'user' => $this->user() ? $this->user()->id : null,
+            'company_header' => $this->header('company'),
+            'is_validated' => property_exists($this, 'validated') ? !is_null($this->validated) : false
+        ]);
+
+        // Validate the request
+        $this->validateResolved();
+
         $company_currency = CompanySetting::getSetting('currency', $this->header('company'));
         $current_currency = $this->currency_id;
         $exchange_rate = $company_currency != $current_currency ? $this->exchange_rate : 1;
         $currency = Customer::find($this->customer_id)->currency_id;
 
-        return collect($this->validated())
+        $payload = collect($this->validated())
             ->merge([
                 'creator_id' => $this->user()->id,
                 'company_id' => $this->header('company'),
@@ -94,5 +107,15 @@ class PaymentRequest extends FormRequest
                 'currency_id' => $currency
             ])
             ->toArray();
+
+        Log::info('Payment payload prepared:', [
+            'payload' => $payload,
+            'company_currency' => $company_currency,
+            'current_currency' => $current_currency,
+            'exchange_rate' => $exchange_rate,
+            'currency' => $currency
+        ]);
+
+        return $payload;
     }
 }

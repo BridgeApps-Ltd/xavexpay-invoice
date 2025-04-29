@@ -18,3 +18,8 @@ Homestead.yaml
 /.scribe
 !storage/fonts/.gitkeep
 .DS_Store
+/public/build/
+public/build/
+/public/build/*
+/public/build/assets/*
+

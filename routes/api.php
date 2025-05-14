@@ -574,6 +574,14 @@ Route::prefix('/v1')->group(function () {
             $paymentDomain = config('payment.domain');
             $apiKey = config('payment.api_key');
             
+            \Log::info('Payment Configuration:', [
+                'domain' => $paymentDomain,
+                'api_key' => $apiKey,
+                'tenant_id' => config('payment.tenant_id'),
+                'context' => config('payment.context'),
+                'status' => config('payment.status')
+            ]);
+
             \Log::info('Payment Intent API Request:', [
                 'url' => "{$paymentDomain}/api/v1/payment_intent",
                 'headers' => [
@@ -584,11 +592,18 @@ Route::prefix('/v1')->group(function () {
                 'body' => $request->all()
             ]);
 
+            // Add default values from config if not provided in request
+            $requestData = array_merge([
+                'tenantId' => config('payment.tenant_id'),
+                'context' => config('payment.context'),
+                'status' => config('payment.status')
+            ], $request->all());
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => "Bearer {$apiKey}",
                 'X-apikey' => $apiKey
-            ])->post("{$paymentDomain}/api/v1/payment_intent", $request->all());
+            ])->post("{$paymentDomain}/api/v1/payment_intent", $requestData);
 
             \Log::info('Payment Intent API Response:', [
                 'status' => $response->status(),
@@ -596,7 +611,6 @@ Route::prefix('/v1')->group(function () {
                 'body' => $response->body()
             ]);
 
-            // Return the plain text response with proper content type
             return response($response->body(), $response->status())
                 ->header('Content-Type', 'text/plain');
         } catch (\Exception $e) {

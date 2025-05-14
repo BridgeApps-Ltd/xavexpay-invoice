@@ -12,7 +12,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "users": "Users",
-    "modules": "Modules"
+    "modules": "Modules",
+    "import": "Import"
   },
   "general": {
     "add_company": "Add Company",
@@ -45,6 +46,8 @@
     "home": "Home",
     "filter": "Filter",
     "delete": "Delete",
+    "get_invoices": "Get Invoices",
+    "date_filter_applied": "Date filter applied",
     "edit": "Edit",
     "view": "View",
     "add_new_item": "Add New Item",
@@ -1535,5 +1538,20 @@
   "pdf_tax_label": "Tax",
   "pdf_payment_link": "Payment Link",
   "pdf_payment_terms": "Payment Terms",
-  "pdf_terms_and_conditions": "Terms & Conditions"
+  "pdf_terms_and_conditions": "Terms & Conditions",
+  "import": {
+    "title": "Import",
+    "menu_title": {
+      "import_invoices": "Import Invoices",
+      "import_recurring_invoices": "Import Recurring Invoices"
+    },
+    "import_invoices": {
+      "title": "Import Invoices",
+      "description": "Import your invoices from external sources."
+    },
+    "import_recurring_invoices": {
+      "title": "Import Recurring Invoices",
+      "description": "Import your recurring invoices from external sources."
+    }
+  }
 }

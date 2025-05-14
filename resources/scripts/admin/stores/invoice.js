@@ -115,7 +115,7 @@ export const useInvoiceStore = (useWindow = false) => {
       fetchInvoices(params) {
         return new Promise((resolve, reject) => {
           axios
-            .get(`/api/v1/invoices`, { params })
+            .get('/api/v1/invoices', { params })
             .then((response) => {
               this.invoices = response.data.data
               this.invoiceTotalCount = response.data.meta.invoice_total_count

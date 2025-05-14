@@ -38,6 +38,34 @@
       </template>
     </BasePageHeader>
 
+    <!-- Quick Date Filter -->
+    <div class="flex items-center space-x-4 mb-4 p-4 bg-white rounded-md shadow-sm">
+      <div class="flex items-center">
+        <span class="mr-2 text-sm font-medium text-gray-700">{{ $t('general.from') }}:</span>
+        <BaseDatePicker
+          v-model="quickDateFilter.startDate"
+          :calendar-button="true"
+          calendar-button-icon="calendar"
+          class="w-40"
+        />
+      </div>
+      <div class="flex items-center">
+        <span class="mr-2 text-sm font-medium text-gray-700">{{ $t('general.to') }}:</span>
+        <BaseDatePicker
+          v-model="quickDateFilter.endDate"
+          :calendar-button="true" 
+          calendar-button-icon="calendar"
+          class="w-40"
+        />
+      </div>
+      <BaseButton
+        variant="primary"
+        @click="applyQuickDateFilter"
+      >
+        {{ $t('general.get_invoices') }}
+      </BaseButton>
+    </div>
+
     <BaseFilterWrapper
       v-show="showFilters"
       :row-on-xl="true"
@@ -196,7 +224,7 @@
         </template>
 
         <template #cell-name="{ row }">
-          <BaseText :text="row.data.customer.name" :length="30" />
+          <BaseText :text="row.data.customer_name || (row.data.customer && row.data.customer.name) || ''" :length="30" />
         </template>
 
         <!-- Invoice Number  -->
@@ -218,7 +246,7 @@
         <template #cell-total="{ row }">
           <BaseFormatMoney
             :amount="row.data.total"
-            :currency="row.data.customer.currency"
+            :currency="row.data.currency || (row.data.customer && row.data.customer.currency)"
           />
         </template>
 
@@ -234,7 +262,7 @@
           <div class="flex justify-between">
             <BaseFormatMoney
               :amount="row.data.due_amount"
-              :currency="row.data.currency"
+              :currency="row.data.currency || (row.data.customer && row.data.customer.currency)"
             />
 
             <BasePaidStatusBadge
@@ -273,6 +301,7 @@ import { useDialogStore } from '@/scripts/stores/dialog'
 import { useUserStore } from '@/scripts/admin/stores/user'
 import abilities from '@/scripts/admin/stub/abilities'
 import { debouncedWatch } from '@vueuse/core'
+import moment from 'moment'
 
 import MoonwalkerIcon from '@/scripts/components/icons/empty/MoonwalkerIcon.vue'
 import InvoiceDropdown from '@/scripts/admin/components/dropdowns/InvoiceIndexDropdown.vue'
@@ -288,6 +317,12 @@ const { t } = useI18n()
 const utils = inject('$utils')
 const table = ref(null)
 const showFilters = ref(false)
+
+// Initialize dates for the current month
+const quickDateFilter = reactive({
+  startDate: moment().startOf('month').format('YYYY-MM-DD'),
+  endDate: moment().endOf('month').format('YYYY-MM-DD')
+})
 
 const status = ref([
   {
@@ -404,22 +439,39 @@ async function fetchData({ page, filter, sort }) {
     orderByField: sort.fieldName || 'created_at',
     orderBy: sort.order || 'desc',
     page,
+    limit: 20
   }
 
   isRequestOngoing.value = true
 
-  let response = await invoiceStore.fetchInvoices(data)
+  try {
+    let response = await invoiceStore.fetchInvoices(data)
+    isRequestOngoing.value = false
 
-  isRequestOngoing.value = false
-
-  return {
-    data: response.data.data,
-    pagination: {
-      totalPages: response.data.meta.last_page,
-      currentPage: page,
-      totalCount: response.data.meta.total,
-      limit: 10,
-    },
+    return {
+      data: response.data.data,
+      pagination: {
+        totalPages: response.data.meta.last_page,
+        currentPage: page,
+        totalCount: response.data.meta.total,
+        limit: 20,
+      },
+    }
+  } catch (error) {
+    isRequestOngoing.value = false
+    notificationStore.showNotification({
+      type: 'error',
+      message: t('general.error_occurred')
+    })
+    return {
+      data: [],
+      pagination: {
+        totalPages: 0,
+        currentPage: 1,
+        totalCount: 0,
+        limit: 20,
+      },
+    }
   }
 }
 
@@ -500,6 +552,31 @@ function toggleFilter() {
   }
 
   showFilters.value = !showFilters.value
+}
+
+function applyQuickDateFilter() {
+  filters.from_date = quickDateFilter.startDate
+  filters.to_date = quickDateFilter.endDate
+  
+  // Clear other filters for better performance
+  filters.customer_id = ''
+  filters.invoice_number = ''
+  
+  // Keep status filter if set
+  
+  // Reset pagination and refresh
+  invoiceStore.$patch((state) => {
+    state.selectedInvoices = []
+    state.selectAllField = false
+  })
+  
+  refreshTable()
+  
+  // Show notification
+  notificationStore.showNotification({
+    type: 'success',
+    message: t('general.date_filter_applied')
+  })
 }
 
 function setActiveTab(val) {

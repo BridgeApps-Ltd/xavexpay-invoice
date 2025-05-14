@@ -113,6 +113,11 @@ const ModuleView = () => import('@/scripts/admin/views/modules/View.vue')
 const InvoicePublicPage = () =>
   import('@/scripts/components/InvoicePublicPage.vue')
 
+// Import
+const ImportIndex = () => import('@/scripts/admin/views/import/Index.vue')
+const ImportInvoices = () => import('@/scripts/admin/views/import/ImportInvoices.vue')
+const ImportRecurringInvoices = () => import('@/scripts/admin/views/import/ImportRecurringInvoices.vue')
+
 export default [
   {
     path: '/installation',
@@ -332,6 +337,25 @@ export default [
             name: 'database.settings',
             meta: { isOwner: true },
             component: () => import('@/scripts/pages/settings/DatabaseSettings.vue'),
+          },
+        ],
+      },
+
+      //import
+      {
+        path: 'import',
+        name: 'import',
+        component: ImportIndex,
+        children: [
+          {
+            path: 'invoices',
+            name: 'import.invoices',
+            component: ImportInvoices,
+          },
+          {
+            path: 'recurring-invoices',
+            name: 'import.recurring-invoices',
+            component: ImportRecurringInvoices,
           },
         ],
       },

@@ -222,9 +222,9 @@ async function onGeneratePaymentLink() {
               result: "",
               message: "",
               userId: invoiceData.value.customer.email,
-              context: "order",
-              tenantId: 1001,
-              status: "CREATED",
+              tenantId: paymentConfig.tenantId,
+              context: paymentConfig.context,
+              status: paymentConfig.status,
               currencySymbol: invoiceData.value.currency.symbol
             }
           })
@@ -242,9 +242,9 @@ async function onGeneratePaymentLink() {
               result: "",
               message: "",
               userId: invoiceData.value.customer.email,
-              context: "order",
-              tenantId: 1001,
-              status: "CREATED",
+              tenantId: paymentConfig.tenantId,
+              context: paymentConfig.context,
+              status: paymentConfig.status,
               currencySymbol: invoiceData.value.currency.symbol
             })
 

@@ -29,6 +29,7 @@ export const useGlobalStore = (useWindow = false) => {
       // Menus
       mainMenu: [],
       settingMenu: [],
+      importMenu: [],
 
       // Boolean Flags
       isAppLoaded: false,
@@ -56,6 +57,7 @@ export const useGlobalStore = (useWindow = false) => {
 
               this.mainMenu = response.data.main_menu
               this.settingMenu = response.data.setting_menu
+              this.importMenu = response.data.import_menu
 
               this.config = response.data.config
               this.globalSettings = response.data.global_settings

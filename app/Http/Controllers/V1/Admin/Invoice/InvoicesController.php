@@ -26,7 +26,10 @@ class InvoicesController extends Controller
         $invoices = Invoice::whereCompany()
             ->join('customers', 'customers.id', '=', 'invoices.customer_id')
             ->applyFilters($request->all())
-            ->select('invoices.*', 'customers.name')
+            ->select([
+                'invoices.*',
+                'customers.name as customer_name'
+            ])
             ->latest()
             ->paginateData($limit);
 

@@ -19,6 +19,23 @@ class BootstrapController extends Controller
     use GeneratesMenuTrait;
 
     /**
+     * Check if the menu data should be included
+     *
+     * @param  object  $data
+     * @param  \Crater\Models\User  $user
+     * @param  \Crater\Models\Company  $company
+     * @return bool
+     */
+    protected function setMenuData($data, $user, $company)
+    {
+        if ($user->checkAccess($data)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Handle the incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -30,8 +47,8 @@ class BootstrapController extends Controller
         $current_user_settings = $current_user->getAllSettings();
 
         $main_menu = $this->generateMenu('main_menu', $current_user);
-
         $setting_menu = $this->generateMenu('setting_menu', $current_user);
+        $import_menu = $this->generateMenu('import_menu', $current_user);
 
         $companies = $current_user->companies;
 
@@ -72,6 +89,7 @@ class BootstrapController extends Controller
             'global_settings' => $global_settings,
             'main_menu' => $main_menu,
             'setting_menu' => $setting_menu,
+            'import_menu' => $import_menu,
             'modules' => Module::where('enabled', true)->pluck('name'),
         ]);
     }

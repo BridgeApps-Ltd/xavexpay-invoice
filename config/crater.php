@@ -411,6 +411,16 @@ return [
             'ability' => '',
             'model' => ''
         ],
+        [
+            'title' => 'navigation.import',
+            'group' => 3,
+            'link' => '/admin/import',
+            'icon' => 'CloudUploadIcon',
+            'name' => 'Import',
+            'owner_only' => false,
+            'ability' => '',
+            'model' => ''
+        ],
     ],
 
     /*
@@ -513,5 +523,31 @@ return [
         'Invoice',
         'Payment',
         'Expense',
-    ]
+    ],
+
+    /*
+    * List of import menu
+    */
+    'import_menu' => [
+        [
+            'title' => 'import.menu_title.import_invoices',
+            'group' => '',
+            'name' => 'Import Invoices',
+            'link' => '/admin/import/invoices',
+            'icon' => 'DocumentTextIcon',
+            'owner_only' => false,
+            'ability' => '',
+            'model' => ''
+        ],
+        [
+            'title' => 'import.menu_title.import_recurring_invoices',
+            'group' => '',
+            'name' => 'Import Recurring Invoices',
+            'link' => '/admin/import/recurring-invoices',
+            'icon' => 'DocumentDuplicateIcon',
+            'owner_only' => false,
+            'ability' => '',
+            'model' => ''
+        ],
+    ],
 ];

@@ -21,22 +21,55 @@ class InvoicesController extends Controller
     {
         $this->authorize('viewAny', Invoice::class);
 
+        \Log::info('Invoice request received', ['request' => $request->all()]);
+
         $limit = $request->has('limit') ? $request->limit : 10;
+        \Log::info('Using limit', ['limit' => $limit]);
 
-        $invoices = Invoice::whereCompany()
+        \Log::info('Building query');
+        $query = Invoice::whereCompany()
             ->join('customers', 'customers.id', '=', 'invoices.customer_id')
-            ->applyFilters($request->all())
-            ->select([
-                'invoices.*',
-                'customers.name as customer_name'
-            ])
-            ->latest()
+            ->applyFilters($request->all());
+        
+        \Log::info('Adding select fields');
+        $query->select([
+            'invoices.*',
+            'customers.name as customer_name'
+        ]);
+        
+        \Log::info('Ordering and paginating');
+        $invoices = $query->latest()
             ->paginateData($limit);
+            
+        \Log::info('Query completed', [
+            'count' => $invoices->count(),
+            'total' => $invoices->total(),
+            'current_page' => $invoices->currentPage(),
+            'per_page' => $invoices->perPage()
+        ]);
+        
+        // Log the first invoice if any exist
+        if ($invoices->count() > 0) {
+            \Log::info('First invoice data', [
+                'invoice' => $invoices->first()->toArray()
+            ]);
+        } else {
+            \Log::info('No invoices found');
+        }
 
-        return (InvoiceResource::collection($invoices))
-            ->additional(['meta' => [
-                'invoice_total_count' => Invoice::whereCompany()->count(),
-            ]]);
+        $totalCount = Invoice::whereCompany()->count();
+        \Log::info('Total invoice count', ['count' => $totalCount]);
+
+        $resource = InvoiceResource::collection($invoices);
+        \Log::info('Resource created');
+
+        $response = $resource->additional(['meta' => [
+            'invoice_total_count' => $totalCount,
+        ]]);
+        
+        \Log::info('Response prepared, returning data');
+        
+        return $response;
     }
 
     /**

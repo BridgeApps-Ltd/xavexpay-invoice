@@ -98,6 +98,44 @@
             </td>
         </tr>
 
+        
+
+        @if ($invoice->tax_per_item === 'YES' && isset($taxes) && count($taxes) > 0)
+            <!-- if per-item taxes exist and are not empty -->
+            @foreach ($taxes as $tax)
+                <tr>
+                    <td class="border-0 total-table-attribute-label">
+                        {{$tax->name.' ('.$tax->percent.'%)'}}
+                    </td>
+                    <td class="py-2 border-0 item-cell total-table-attribute-value">
+                        {!! format_money_pdf($tax->amount, $invoice->customer->currency) !!}
+                    </td>
+                </tr>
+            @endforeach
+        @elseif($invoice->taxes->isNotEmpty())
+            <!-- if invoice level taxes exist and are not empty -->
+            @foreach ($invoice->taxes as $tax)
+                <tr>
+                    <td class="border-0 total-table-attribute-label">
+                        {{$tax->name.' ('.$tax->percent.'%)'}}
+                    </td>
+                    <td class="py-2 border-0 item-cell total-table-attribute-value">
+                        {!! format_money_pdf($tax->amount, $invoice->customer->currency) !!}
+                    </td>
+                </tr>
+            @endforeach
+        @elseif($invoice->tax > 0)
+            <!--  If no specific tax records exist but there is a tax amount -->
+            <tr>
+                <td class="border-0 total-table-attribute-label">
+                    @lang('pdf_tax_label')
+                </td>
+                <td class="py-2 border-0 item-cell total-table-attribute-value">
+                    {!! format_money_pdf($invoice->tax, $invoice->customer->currency) !!}
+                </td>
+            </tr>
+        @endif
+
         @if($invoice->discount > 0)
             @if ($invoice->discount_per_item === 'NO')
                 <tr>
@@ -119,30 +157,6 @@
                     </td>
                 </tr>
             @endif
-        @endif
-
-        @if ($invoice->tax_per_item === 'YES')
-            @foreach ($taxes as $tax)
-                <tr>
-                    <td class="border-0 total-table-attribute-label">
-                        {{$tax->name.' ('.$tax->percent.'%)'}}
-                    </td>
-                    <td class="py-2 border-0 item-cell total-table-attribute-value">
-                        {!! format_money_pdf($tax->amount, $invoice->customer->currency) !!}
-                    </td>
-                </tr>
-            @endforeach
-        @else
-            @foreach ($invoice->taxes as $tax)
-                <tr>
-                    <td class="border-0 total-table-attribute-label">
-                        {{$tax->name.' ('.$tax->percent.'%)'}}
-                    </td>
-                    <td class="py-2 border-0 item-cell total-table-attribute-value">
-                        {!! format_money_pdf($tax->amount, $invoice->customer->currency) !!}
-                    </td>
-                </tr>
-            @endforeach
         @endif
 
         <tr>

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\V1\Admin\Settings;
+namespace Crater\Http\Controllers\V1\Admin\Settings;
 
-use App\Http\Controllers\Controller;
-use App\Models\Company;
+use Crater\Http\Controllers\Controller;
+use Crater\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;

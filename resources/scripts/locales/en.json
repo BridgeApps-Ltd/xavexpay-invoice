@@ -1547,11 +1547,32 @@
     },
     "import_invoices": {
       "title": "Import Invoices",
-      "description": "Import your invoices from external sources."
+      "description": "Import your invoices from external sources using CSV files."
     },
     "import_recurring_invoices": {
       "title": "Import Recurring Invoices",
-      "description": "Import your recurring invoices from external sources."
-    }
+      "description": "Import your recurring invoices from external sources using CSV files."
+    },
+    "step_1_download": "Step 1: Download CSV Template",
+    "download_template_description": "Download a CSV template with all required fields for importing invoices. Fill this template with your invoice data.",
+    "download_template_description_recurring": "Download a CSV template with all required fields for importing recurring invoices. Fill this template with your recurring invoice data.",
+    "download_csv_template": "Download CSV Template",
+    "step_2_upload": "Step 2: Upload CSV File",
+    "upload_csv_description": "Upload your completed CSV file containing invoice data. The first row should contain headers (which will be ignored).",
+    "upload_csv_description_recurring": "Upload your completed CSV file containing recurring invoice data. The first row should contain headers (which will be ignored).",
+    "drag_and_drop": "Drag and drop your CSV file here",
+    "or": "or",
+    "browse_files": "Browse Files",
+    "uploading": "Uploading...",
+    "import_csv": "Import CSV",
+    "import_results": "Import Results",
+    "successfully_imported": "{count} records successfully imported",
+    "errors_found": "{count} errors found",
+    "import_completed": "Import completed with {count} successful records",
+    "import_failed": "Import failed. Please check the errors and try again.",
+    "only_csv_allowed": "Only CSV files are allowed",
+    "csv_parse_error": "Failed to parse CSV file",
+    "error_loading_customers": "Failed to load customers for validation",
+    "error_loading_tax_types": "Failed to load tax types for validation"
   }
 }

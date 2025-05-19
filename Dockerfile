@@ -1,40 +1,83 @@
-FROM php:8.1-fpm
-
-# Arguments defined in docker-compose.yml
-ARG user
-ARG uid
+# --- Build Stage 1: Composer & PHP dependencies ---
+FROM php:8.1-fpm-alpine as composer
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     git \
     curl \
     libpng-dev \
-    libonig-dev \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev \
-    libmagickwand-dev \
-    mariadb-client
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN pecl install imagick \
-    && docker-php-ext-enable imagick
+    sqlite-dev \
+    libzip-dev
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql pdo_sqlite bcmath gd zip
 
 # Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
-
-# Set working directory
 WORKDIR /var/www
 
-USER $user
+# Copy the entire project including vendor directory
+COPY . .
+
+# --- Build Stage 2: Node/Yarn/Vite ---
+FROM php:8.1-fpm-alpine as node
+
+# Install system dependencies and Node.js
+RUN apk add --no-cache \
+    nodejs \
+    yarn \
+    libpng-dev \
+    libxml2-dev \
+    sqlite-dev \
+    libzip-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql pdo_sqlite bcmath gd
+
+WORKDIR /var/www
+
+# Copy the entire project including node_modules
+COPY . .
+
+# Set permissions for build (excluding node_modules)
+RUN chown -R $user:www-data /var/www && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Build assets using local node_modules
+RUN yarn build
+
+# --- Build Stage 3: Production ---
+FROM php:8.1-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    libpng-dev \
+    libxml2-dev \
+    sqlite-dev \
+    libzip-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql pdo_sqlite bcmath gd
+
+WORKDIR /var/www
+
+# Copy built assets from node stage
+COPY --from=node /var/www/public/build ./public/build
+
+# Copy application files from composer stage
+COPY --from=composer /var/www .
+
+# Copy .env.stub to .env for SQLite usage
+RUN cp .env.stub .env
+
+# Set permissions (adjust as needed)
+RUN chown -R $user:www-data /var/www && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Expose port for php server
+EXPOSE 8000
+
+# Start Laravel development server
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]

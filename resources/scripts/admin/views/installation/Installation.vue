@@ -2,8 +2,8 @@
   <div class="flex flex-col items-center justify-between w-full pt-10">
     <img
       id="logo-crater"
-      src="/img/crater-logo.png"
-      alt="Crater Logo"
+      src="/public/img/logos/invvex-logo-white.svg"
+      alt="Invexx Logo"
       class="h-12 mb-5 md:mb-10"
     />
 

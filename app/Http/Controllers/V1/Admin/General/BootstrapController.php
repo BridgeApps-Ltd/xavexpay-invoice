@@ -64,6 +64,9 @@ class BootstrapController extends Controller
             ? Currency::find($current_company_settings->get('currency'))
             : Currency::first();
 
+        // Get payment settings
+        $payment_settings = \Crater\Models\CompanyPaymentSetting::getSettings($current_company->id);
+
         BouncerFacade::refreshFor($current_user);
 
         $global_settings = Setting::getSettings([
@@ -85,6 +88,7 @@ class BootstrapController extends Controller
             'current_company' => new CompanyResource($current_company),
             'current_company_settings' => $current_company_settings,
             'current_company_currency' => $current_company_currency,
+            'payment_settings' => $payment_settings,
             'config' => config('crater'),
             'global_settings' => $global_settings,
             'main_menu' => $main_menu,

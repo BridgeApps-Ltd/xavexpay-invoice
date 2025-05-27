@@ -807,20 +807,31 @@
     "menu_title": {
       "account_settings": "Account Settings",
       "company_information": "Company Information",
-      "customization": "Customization",
       "preferences": "Preferences",
+      "payment_settings": "Payment Settings",
+      "customization": "Customization",
+      "exchange_rate": "Exchange Rate",
       "notifications": "Notifications",
       "tax_types": "Tax Types",
-      "expense_category": "Expense Categories",
-      "update_app": "Update App",
-      "backup": "Backup",
-      "file_disk": "File Disk",
-      "custom_fields": "Custom Fields",
       "payment_modes": "Payment Modes",
+      "custom_fields": "Custom Fields",
       "notes": "Notes",
-      "exchange_rate": "Exchange Rate",
-      "address_information": "Address Information",
-      "database": "Database Settings"
+      "expense_category": "Expense Category",
+      "file_disk": "File Disk",
+      "backup": "Backup",
+      "update_app": "Update App",
+      "database": "Database",
+      "address_information": "Address Information"
+    },
+    "payment_settings": {
+      "description": "Configure your payment settings",
+      "payment_manager": "Payment Manager",
+      "payment_domain_url": "Payment Domain URL",
+      "payment_api_key": "Payment API Key",
+      "payment_tenant_id": "Payment Tenant ID",
+      "payment_context": "Payment Context",
+      "payment_status": "Payment Status",
+      "updated": "Payment settings updated successfully"
     },
     "address_information": {
       "section_description": "  You can update Your Address information using form below."

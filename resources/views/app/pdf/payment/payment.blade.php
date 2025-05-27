@@ -344,6 +344,59 @@
                             <td class="attribute-value"> &nbsp;{{ $payment->invoice->invoice_number }}</td>
                         </tr>
                     @endif
+                    @php
+                        $paymentDetailsField = $payment->fields()
+                            ->whereHas('customField', function($query) {
+                                $query->where('slug', 'CUSTOM_PAYMENT_PAYMENTDETAILS');
+                            })
+                            ->with('customField')
+                            ->first();
+                        
+                        \Log::info('PDF Template - Custom Field Check', [
+                            'payment_id' => $payment->id,
+                            'has_fields' => $payment->fields()->exists(),
+                            'payment_details_field' => $paymentDetailsField ? [
+                                'id' => $paymentDetailsField->id,
+                                'value' => $paymentDetailsField->string_answer
+                            ] : null
+                        ]);
+                        
+                        if ($paymentDetailsField && $paymentDetailsField->string_answer) {
+                            $details = [];
+                            foreach (explode("\n", $paymentDetailsField->string_answer) as $line) {
+                                if (strpos($line, ':') !== false) {
+                                    list($key, $value) = explode(':', $line, 2);
+                                    $details[trim($key)] = trim($value);
+                                }
+                            }
+                            \Log::info('PDF Template - Parsed Payment Details', [
+                                'payment_id' => $payment->id,
+                                'parsed_details' => $details
+                            ]);
+                        }
+                    @endphp
+                    @if (isset($details))
+                        <tr>
+                            <td class="attribute-label">Payment ID</td>
+                            <td class="attribute-value"> &nbsp;{{ $details['Payment ID'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="attribute-label">UUID</td>
+                            <td class="attribute-value"> &nbsp;{{ $details['UUID'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="attribute-label">Payment Method</td>
+                            <td class="attribute-value"> &nbsp;{{ $details['Payment Method'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="attribute-label">Status</td>
+                            <td class="attribute-value"> &nbsp;{{ $details['Status'] ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="attribute-label">Context</td>
+                            <td class="attribute-value"> &nbsp;{{ $details['Context'] ?? '-' }}</td>
+                        </tr>
+                    @endif
                 </table>
             </div>
         </div>

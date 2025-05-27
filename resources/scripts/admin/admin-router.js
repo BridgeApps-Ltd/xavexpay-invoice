@@ -56,6 +56,8 @@ const UpdateApp = () =>
   import('@/scripts/admin/views/settings/UpdateAppSetting.vue')
 const RolesSettings = () =>
   import('@/scripts/admin/views/settings/RolesSettings.vue')
+const PaymentSettings = () =>
+  import('@/scripts/admin/views/settings/PaymentSettings.vue')
 
 // Items
 const ItemsIndex = () => import('@/scripts/admin/views/items/Index.vue')
@@ -253,6 +255,12 @@ export default [
             name: 'preferences',
             meta: { isOwner: true },
             component: Preferences,
+          },
+          {
+            path: 'payment-settings',
+            name: 'payment.settings',
+            meta: { isOwner: true },
+            component: PaymentSettings,
           },
           {
             path: 'customization',

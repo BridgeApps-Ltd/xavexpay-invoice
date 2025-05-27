@@ -7,21 +7,38 @@ use Crater\Models\Address;
 use Crater\Models\CompanySetting;
 use Crater\Models\FileDisk;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 trait GeneratesPdfTrait
 {
     public function getGeneratedPDFOrStream($collection_name)
     {
+        Log::info('Getting generated PDF or stream', [
+            'model_id' => $this->id,
+            'collection_name' => $collection_name,
+            'model_type' => get_class($this)
+        ]);
+
         $pdf = $this->getGeneratedPDF($collection_name);
         if ($pdf && file_exists($pdf['path'])) {
+            Log::info('Found existing PDF file', [
+                'model_id' => $this->id,
+                'path' => $pdf['path'],
+                'file_name' => $pdf['file_name']
+            ]);
             return response()->make(file_get_contents($pdf['path']), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="'.$pdf['file_name'].'"',
             ]);
         }
 
-        $locale = CompanySetting::getSetting('language',  $this->company_id);
+        Log::info('No existing PDF found, generating new one', [
+            'model_id' => $this->id,
+            'collection_name' => $collection_name
+        ]);
 
+        $locale = CompanySetting::getSetting('language',  $this->company_id);
         App::setLocale($locale);
 
         $pdf = $this->getPDFData();
@@ -35,12 +52,29 @@ trait GeneratesPdfTrait
     public function getGeneratedPDF($collection_name)
     {
         try {
+            Log::info('Attempting to get generated PDF', [
+                'model_id' => $this->id,
+                'collection_name' => $collection_name,
+                'model_type' => get_class($this)
+            ]);
+
             $media = $this->getMedia($collection_name)->first();
 
             if ($media) {
+                Log::info('Found media for PDF', [
+                    'model_id' => $this->id,
+                    'media_id' => $media->id,
+                    'file_name' => $media->file_name
+                ]);
+
                 $file_disk = FileDisk::find($media->custom_properties['file_disk_id']);
 
                 if (! $file_disk) {
+                    Log::warning('File disk not found for media', [
+                        'model_id' => $this->id,
+                        'media_id' => $media->id,
+                        'file_disk_id' => $media->custom_properties['file_disk_id']
+                    ]);
                     return false;
                 }
 
@@ -54,12 +88,29 @@ trait GeneratesPdfTrait
                     $path = $media->getTemporaryUrl(Carbon::now()->addMinutes(5));
                 }
 
+                Log::info('Generated PDF path', [
+                    'model_id' => $this->id,
+                    'path' => $path,
+                    'file_name' => $media->file_name
+                ]);
+
                 return collect([
                     'path' => $path,
                     'file_name' => $media->file_name,
                 ]);
             }
+
+            Log::info('No media found for PDF', [
+                'model_id' => $this->id,
+                'collection_name' => $collection_name
+            ]);
+
         } catch (\Exception $e) {
+            Log::error('Error getting generated PDF', [
+                'model_id' => $this->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return false;
         }
 
@@ -68,43 +119,41 @@ trait GeneratesPdfTrait
 
     public function generatePDF($collection_name, $file_name, $deleteExistingFile = false)
     {
-        $save_pdf_to_disk = CompanySetting::getSetting('save_pdf_to_disk',  $this->company_id);
-
-        if ($save_pdf_to_disk == 'NO') {
-            return 0;
-        }
-
-        $locale = CompanySetting::getSetting('language',  $this->company_id);
-
-        App::setLocale($locale);
-
-        $pdf = $this->getPDFData();
-
-        \Storage::disk('local')->put('temp/'.$collection_name.'/'.$this->id.'/temp.pdf', $pdf->output());
-
-        if ($deleteExistingFile) {
-            $this->clearMediaCollection($this->id);
-        }
-
-        $file_disk = FileDisk::whereSetAsDefault(true)->first();
-
-        if ($file_disk) {
-            $file_disk->setConfig();
-        }
-
-        $media = \Storage::disk('local')->path('temp/'.$collection_name.'/'.$this->id.'/temp.pdf');
+        Log::info('Generating PDF', [
+            'model_id' => $this->id,
+            'collection_name' => $collection_name,
+            'file_name' => $file_name,
+            'delete_existing' => $deleteExistingFile
+        ]);
 
         try {
-            $this->addMedia($media)
-                ->withCustomProperties(['file_disk_id' => $file_disk->id])
+            if ($deleteExistingFile) {
+                $this->clearMediaCollection($collection_name);
+            }
+
+            $pdf = $this->getPDFData();
+            $pdf->save(storage_path('app/temp/'.$collection_name.'/'.$this->id.'.pdf'));
+
+            $this->addMedia(storage_path('app/temp/'.$collection_name.'/'.$this->id.'.pdf'))
+                ->usingName($file_name)
                 ->usingFileName($file_name.'.pdf')
+                ->withCustomProperties(['file_disk_id' => 1])
                 ->toMediaCollection($collection_name, config('filesystems.default'));
 
-            \Storage::disk('local')->deleteDirectory('temp/'.$collection_name.'/'.$this->id);
+            Log::info('PDF generated successfully', [
+                'model_id' => $this->id,
+                'collection_name' => $collection_name,
+                'file_name' => $file_name
+            ]);
 
             return true;
         } catch (\Exception $e) {
-            return $e->getMessage();
+            Log::error('Error generating PDF', [
+                'model_id' => $this->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return false;
         }
     }
 

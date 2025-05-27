@@ -558,6 +558,10 @@ Route::prefix('/v1')->group(function () {
         Route::post('/database/test', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'testConnection']);
         Route::post('/database/migrate', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'runMigrations']);
         Route::get('/settings/database/check-migrations', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'checkMigrations']);
+
+        // Payment settings routes
+        Route::get('/payment-settings', [\Crater\Http\Controllers\V1\Admin\Settings\PaymentSettingsController::class, 'getSettings']);
+        Route::post('/payment-settings', [\Crater\Http\Controllers\V1\Admin\Settings\PaymentSettingsController::class, 'saveSettings']);
     });
 
     // Payment configuration endpoint
@@ -568,42 +572,45 @@ Route::prefix('/v1')->group(function () {
         ]);
     });
 
+    // Payment webhook endpoint
+    Route::post('/payment-webhook', \Crater\Http\Controllers\V1\Payment\PaymentWebhookController::class);
+
     // Payment proxy routes
     Route::post('/payment-intent', function (Request $request) {
         try {
-            $paymentDomain = config('payment.domain');
-            $apiKey = config('payment.api_key');
+            $company_id = $request->header('company');
+            $paymentSettings = \Crater\Models\CompanyPaymentSetting::getSettings($company_id);
             
             \Log::info('Payment Configuration:', [
-                'domain' => $paymentDomain,
-                'api_key' => $apiKey,
-                'tenant_id' => config('payment.tenant_id'),
-                'context' => config('payment.context'),
-                'status' => config('payment.status')
+                'domain' => $paymentSettings->payment_domain_url,
+                'api_key' => $paymentSettings->payment_api_key,
+                'tenant_id' => $paymentSettings->payment_tenant_id,
+                'context' => $paymentSettings->payment_context,
+                'status' => $paymentSettings->payment_status
             ]);
 
             \Log::info('Payment Intent API Request:', [
-                'url' => "{$paymentDomain}/api/v1/payment_intent",
+                'url' => "{$paymentSettings->payment_domain_url}/api/v1/payment_intent",
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => "Bearer {$apiKey}",
-                    'X-apikey' => $apiKey
+                    'Authorization' => "Bearer {$paymentSettings->payment_api_key}",
+                    'X-apikey' => $paymentSettings->payment_api_key
                 ],
                 'body' => $request->all()
             ]);
 
-            // Add default values from config if not provided in request
+            // Add default values from settings if not provided in request
             $requestData = array_merge([
-                'tenantId' => config('payment.tenant_id'),
-                'context' => config('payment.context'),
-                'status' => config('payment.status')
+                'tenantId' => $paymentSettings->payment_tenant_id,
+                'context' => $paymentSettings->payment_context,
+                'status' => $paymentSettings->payment_status
             ], $request->all());
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$apiKey}",
-                'X-apikey' => $apiKey
-            ])->post("{$paymentDomain}/api/v1/payment_intent", $requestData);
+                'Authorization' => "Bearer {$paymentSettings->payment_api_key}",
+                'X-apikey' => $paymentSettings->payment_api_key
+            ])->post("{$paymentSettings->payment_domain_url}/api/v1/payment_intent", $requestData);
 
             \Log::info('Payment Intent API Response:', [
                 'status' => $response->status(),
@@ -624,22 +631,22 @@ Route::prefix('/v1')->group(function () {
 
     Route::get('/challenge-code', function (Request $request) {
         try {
-            $paymentDomain = config('payment.domain');
-            $apiKey = config('payment.api_key');
+            $company_id = $request->header('company');
+            $paymentSettings = \Crater\Models\CompanyPaymentSetting::getSettings($company_id);
             
             \Log::info('Challenge Code API Request:', [
-                'url' => "{$paymentDomain}/api/v1/challenge/code",
+                'url' => "{$paymentSettings->payment_domain_url}/api/v1/challenge/code",
                 'headers' => [
-                    'Authorization' => "Bearer {$apiKey}",
-                    'X-apikey' => $apiKey
+                    'Authorization' => "Bearer {$paymentSettings->payment_api_key}",
+                    'X-apikey' => $paymentSettings->payment_api_key
                 ],
                 'params' => $request->all()
             ]);
 
             $response = Http::withHeaders([
-                'Authorization' => "Bearer {$apiKey}",
-                'X-apikey' => $apiKey
-            ])->get("{$paymentDomain}/api/v1/challenge/code", $request->all());
+                'Authorization' => "Bearer {$paymentSettings->payment_api_key}",
+                'X-apikey' => $paymentSettings->payment_api_key
+            ])->get("{$paymentSettings->payment_domain_url}/api/v1/challenge/code", $request->all());
 
             \Log::info('Challenge Code API Response:', [
                 'status' => $response->status(),

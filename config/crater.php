@@ -146,6 +146,16 @@ return [
             'model' => ''
         ],
         [
+            'title' => 'settings.menu_title.payment_settings',
+            'group' => '',
+            'name' => 'Payment Settings',
+            'link' => '/admin/settings/payment-settings',
+            'icon' => 'CreditCardIcon',
+            'owner_only' => true,
+            'ability' => '',
+            'model' => ''
+        ],
+        [
             'title' => 'settings.menu_title.customization',
             'group' => '',
             'name' => 'Customization',

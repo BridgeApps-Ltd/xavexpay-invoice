@@ -37,6 +37,15 @@ export const useGlobalStore = (useWindow = false) => {
       areCurrenciesLoading: false,
 
       downloadReport: null,
+
+      currentUser: null,
+      currentUserSettings: null,
+      currentCompany: null,
+      currentCompanySettings: null,
+      currentCompanyCurrency: null,
+      payment_settings: null,
+
+      companies: [],
     }),
 
     getters: {
@@ -72,14 +81,17 @@ export const useGlobalStore = (useWindow = false) => {
               moduleStore.apiToken = response.data.global_settings.api_token
               moduleStore.enableModules = response.data.modules
 
-                // company store
-                companyStore.companies = response.data.companies
+              // company store
+              companyStore.companies = response.data.companies
               companyStore.selectedCompany = response.data.current_company
               companyStore.setSelectedCompany(response.data.current_company)
               companyStore.selectedCompanySettings =
                 response.data.current_company_settings
               companyStore.selectedCompanyCurrency =
                 response.data.current_company_currency
+
+              // Store payment settings
+              this.payment_settings = response.data.payment_settings
 
               global.locale =
                 response.data.current_user_settings.language || 'en'

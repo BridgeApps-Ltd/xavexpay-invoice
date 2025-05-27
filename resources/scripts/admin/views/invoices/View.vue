@@ -13,6 +13,7 @@ import { useDialogStore } from '@/scripts/stores/dialog'
 import { usePaymentStore } from '@/scripts/admin/stores/payment'
 import { useNotificationStore } from '@/scripts/stores/notification'
 import { useCompanyStore } from '@/scripts/admin/stores/company'
+import { useGlobalStore } from '@/scripts/admin/stores/global'
 import useUtils from '@/scripts/composables/useUtils'
 import { useCustomFieldStore } from '@/scripts/admin/stores/custom-field'
 import paymentConfig from '@/scripts/config/payment'
@@ -29,6 +30,7 @@ const userStore = useUserStore()
 const dialogStore = useDialogStore()
 const paymentStore = usePaymentStore()
 const companyStore = useCompanyStore()
+const globalStore = useGlobalStore()
 const utils = useUtils()
 const customFieldStore = useCustomFieldStore()
 const notificationStore = useNotificationStore()
@@ -191,6 +193,11 @@ async function onPayAsCash() {
 }
 
 async function onGeneratePaymentLink() {
+  console.log('=== Payment Link Generation Debug ===')
+  console.log('Global Store:', globalStore)
+  console.log('Payment Settings:', globalStore.payment_settings)
+  console.log('Payment Config:', paymentConfig)
+  
   dialogStore
     .openDialog({
       title: t('general.are_you_sure'),
@@ -206,47 +213,80 @@ async function onGeneratePaymentLink() {
         try {
           console.log('Starting payment link generation process...')
           
+          // Get payment settings from the global store with fallback to paymentConfig
+          const paymentSettings = {
+            payment_domain_url: globalStore.payment_settings?.payment_domain_url || process.env.VUE_APP_PAYMENT_DOMAIN,
+            payment_api_key: globalStore.payment_settings?.payment_api_key || process.env.VUE_APP_PAYMENT_API_KEY,
+            payment_tenant_id: globalStore.payment_settings?.payment_tenant_id || process.env.VUE_APP_PAYMENT_TENANT_ID,
+            payment_context: globalStore.payment_settings?.payment_context || process.env.VUE_APP_PAYMENT_CONTEXT,
+            payment_status: globalStore.payment_settings?.payment_status || process.env.VUE_APP_PAYMENT_STATUS
+          }
+          
+          console.log('Payment settings (with fallbacks):', {
+            ...paymentSettings,
+            payment_api_key: paymentSettings.payment_api_key ? '***' : 'Not found'
+          })
+          
+          // Get the company-specific payment domain URL
+          const companyPaymentDomain = paymentSettings.payment_domain_url
+          console.log('Company Payment Domain:', companyPaymentDomain)
+          
+          if (!companyPaymentDomain) {
+            console.error('Payment domain URL not found in settings')
+            notificationStore.showNotification({
+              type: 'error',
+              message: t('invoices.payment_domain_not_configured'),
+            })
+            return
+          }
+          
+          // Ensure the domain URL is properly formatted
+          const formattedDomain = companyPaymentDomain.endsWith('/') 
+            ? companyPaymentDomain.slice(0, -1) 
+            : companyPaymentDomain
+          
+          console.log('Formatted payment domain:', formattedDomain)
+          
+          // Get payment API key
+          const paymentApiKey = paymentSettings.payment_api_key
+          console.log('Payment API Key:', paymentApiKey ? '***' : 'Not found')
+          
+          if (!paymentApiKey) {
+            console.error('Payment API key not found in settings')
+            notificationStore.showNotification({
+              type: 'error',
+              message: t('invoices.payment_api_key_not_configured'),
+            })
+            return
+          }
+
           // Step 1: Call payment intent API through proxy
           const paymentIntentUrl = '/api/v1/payment-intent'
+          const paymentIntentData = {
+            id: 0,
+            uniqueId: null,
+            contextId: invoiceData.value.invoice_number,
+            amount: invoiceData.value.total / 100,
+            total: invoiceData.value.total / 100,
+            currency: invoiceData.value.currency.code,
+            tax: invoiceData.value.tax / 100,
+            description: `Payment for invoice ${invoiceData.value.invoice_number}`,
+            result: "",
+            message: "",
+            userId: invoiceData.value.customer.email,
+            tenantId: paymentSettings.payment_tenant_id,
+            context: paymentSettings.payment_context,
+            status: paymentSettings.payment_status,
+            currencySymbol: invoiceData.value.currency.symbol
+          }
+          
           console.log('Calling Payment Intent API:', {
             url: paymentIntentUrl,
-            body: {
-              id: 0,
-              uniqueId: null,
-              contextId: invoiceData.value.invoice_number,
-              amount: invoiceData.value.total / 100,
-              total: invoiceData.value.total / 100,
-              currency: invoiceData.value.currency.code,
-              tax: invoiceData.value.tax / 100,
-              description: `Payment for invoice ${invoiceData.value.invoice_number}`,
-              result: "",
-              message: "",
-              userId: invoiceData.value.customer.email,
-              tenantId: paymentConfig.tenantId,
-              context: paymentConfig.context,
-              status: paymentConfig.status,
-              currencySymbol: invoiceData.value.currency.symbol
-            }
+            data: paymentIntentData
           })
 
           try {
-            const paymentIntentResponse = await axios.post(paymentIntentUrl, {
-              id: 0,
-              uniqueId: null,
-              contextId: invoiceData.value.invoice_number,
-              amount: invoiceData.value.total / 100,
-              total: invoiceData.value.total / 100,
-              currency: invoiceData.value.currency.code,
-              tax: invoiceData.value.tax / 100,
-              description: `Payment for invoice ${invoiceData.value.invoice_number}`,
-              result: "",
-              message: "",
-              userId: invoiceData.value.customer.email,
-              tenantId: paymentConfig.tenantId,
-              context: paymentConfig.context,
-              status: paymentConfig.status,
-              currencySymbol: invoiceData.value.currency.symbol
-            })
+            const paymentIntentResponse = await axios.post(paymentIntentUrl, paymentIntentData)
 
             console.log('Payment Intent API Response:', {
               status: paymentIntentResponse.status,
@@ -291,6 +331,8 @@ async function onGeneratePaymentLink() {
 
               if (challengeResponse.status === 200 || challengeResponse.status === 201) {
                 // Check if response has the expected structure
+                console.log('Challenge Code API Response Data:', challengeResponse.data)
+                
                 if (!challengeResponse.data) {
                   console.error('Empty response from Challenge Code API')
                   notificationStore.showNotification({
@@ -302,6 +344,8 @@ async function onGeneratePaymentLink() {
 
                 // Get the URL from the response, defaulting to null if not present
                 const responseUrl = challengeResponse.data.url || null
+                console.log('Response URL:', responseUrl)
+                
                 if (!responseUrl) {
                   console.error('URL not found in Challenge Code API response:', challengeResponse.data)
                   notificationStore.showNotification({
@@ -311,11 +355,11 @@ async function onGeneratePaymentLink() {
                   return
                 }
 
-                // Construct the payment link by replacing 'null?' with 'pay.ps?'
-                const paymentLink = `${paymentDomain.value}/${responseUrl.replace('null?', 'pay.ps?')}`
-                console.log('Generated Payment Link:', paymentLink)
-
                 try {
+                  // Construct the payment link using the company-specific domain
+                  const paymentLink = `${formattedDomain}/${responseUrl.replace('null?', 'pay.ps?')}`
+                  console.log('Generated Payment Link:', paymentLink)
+
                   // First fetch all custom fields for Invoice type
                   const customFieldsResponse = await axios.get('/api/v1/custom-fields', {
                     params: {
@@ -405,7 +449,7 @@ async function onGeneratePaymentLink() {
                   await loadInvoice()
                   console.log('Invoice data refreshed successfully')
                 } catch (error) {
-                  console.error('Failed to update invoice:', error)
+                  console.error('Failed to process payment link:', error)
                   notificationStore.showNotification({
                     type: 'error',
                     message: t('invoices.failed_to_update_payment_link'),

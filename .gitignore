@@ -25,3 +25,12 @@ public/build/
 /public/build/*
 /public/build/assets/*
 nohup.out
+.npmrc
+.yarn/
+.yarnrc.yml
+Dockerfile.1.txt
+Dockerfile.2.txt
+Dockerfile.3.txt
+Dockerfile.4-RELEASE.txt
+package.json.orig.json
+resources/scripts/components/icons/MainLogo.vue.orig

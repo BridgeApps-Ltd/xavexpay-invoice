@@ -141,7 +141,7 @@ const pageHeading = computed(() => {
     return window.login_page_heading
   }
 
-  return 'Simple Invoicing for Individuals Small Businesses'
+  return 'XavexPay Invoice - Simple Invoicing and Integrated Payment Solution'
 })
 
 const pageDescription = computed(() => {
@@ -149,14 +149,14 @@ const pageDescription = computed(() => {
     return window.login_page_description
   }
 
-  return 'Crater helps you track expenses, record payments & generate beautiful invoices & estimates.'
+  return 'Generate Business Invoices, individually and recursively with integrated Payment solutions.'
 })
 
 const copyrightText = computed(() => {
   if (window.copyright_text) {
     return window.copyright_text
   }
-  return 'Copyright @ Crater Invoice, Inc.'
+  return 'Copyright @ BridgeApps Ltd'
 })
 
 const loginPageLogo = computed(() => {

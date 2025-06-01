@@ -22,7 +22,7 @@
       min-h-[100px]
       bg-gray-50
     "
-    :class="avatar ? 'w-32 h-32' : 'w-full'"
+    :class="avatar ? 'w-24 h-24' : 'w-full'"
   >
     <input
       id="file-upload"
@@ -45,7 +45,7 @@
 
     <!-- Avatar Not Selected -->
     <div v-if="!localFiles.length && avatar" class="">
-      <img :src="getDefaultAvatar()" class="rounded" alt="Default Avatar" />
+      <img :src="getDefaultAvatar()" class="w-full h-full object-cover rounded" alt="Default Avatar" />
 
       <a
         href="#"

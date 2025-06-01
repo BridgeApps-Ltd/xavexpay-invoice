@@ -1,6 +1,6 @@
 {
-  "name": "crater-invoice/crater",
-  "description": "Free & Open Source Invoice App for Individuals & Small Businesses. https://craterapp.com",
+  "name": "xavexpay/xavexpay-invoice",
+  "description": "Simple Invoicing and Integrated Payment Solution for Individuals & Small Businesses",
   "keywords": [
     "framework",
     "laravel"

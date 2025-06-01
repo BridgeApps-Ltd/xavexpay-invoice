@@ -31,6 +31,6 @@ const props = defineProps({
 })
 
 const logoUrl = computed(() => {
-  return new URL('../../../../public/storage/invvex-logo-white.png', import.meta.url).href
+  return '/storage/invvex-logo-purple.png'
 })
 </script>

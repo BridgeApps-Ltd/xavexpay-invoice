@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
+use Crater\Models\CompanySetting;
 
 class DatabaseSettingsController extends Controller
 {
@@ -475,16 +476,72 @@ class DatabaseSettingsController extends Controller
         }
     }
 
-    public function checkMigrations()
+    public function checkMigrations(Request $request)
     {
         try {
-            $company = auth()->user()->companies()->first();
-            if (!$company) {
+            $validator = Validator::make($request->all(), [
+                'company_id' => 'required|integer'
+            ]);
+
+            if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No company found for the authenticated user'
+                    'message' => 'Company ID is required'
+                ], 422);
+            }
+
+            $company = Company::find($request->company_id);
+            if (!$company) {
+                Log::error('Company not found', ['company_id' => $request->company_id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Company not found'
                 ], 404);
             }
+
+            // Get database settings
+            $settings = CompanySetting::where('company_id', $company->id)
+                ->whereIn('option', [
+                    'database_connection_host',
+                    'database_connection_port',
+                    'database_connection_name',
+                    'database_connection_username',
+                    'database_connection_password'
+                ])
+                ->get();
+
+            if ($settings->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'migrations_completed' => false
+                ]);
+            }
+
+            $credentials = [];
+            foreach ($settings as $setting) {
+                $key = str_replace('database_connection_', 'database_', $setting->option);
+                $credentials[$key] = $setting->value;
+            }
+
+            // Configure the connection
+            config([
+                'database.connections.company' => [
+                    'driver' => 'mysql',
+                    'host' => $credentials['database_host'],
+                    'port' => $credentials['database_port'],
+                    'database' => $credentials['database_name'],
+                    'username' => $credentials['database_username'],
+                    'password' => $credentials['database_password'],
+                    'charset' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'prefix' => '',
+                    'strict' => false,
+                    'engine' => null,
+                ]
+            ]);
+
+            // Set the connection
+            DB::setDefaultConnection('company');
 
             // Check if the companies table exists and has records
             $migrationsCompleted = Schema::hasTable('companies') && DB::table('companies')->exists();

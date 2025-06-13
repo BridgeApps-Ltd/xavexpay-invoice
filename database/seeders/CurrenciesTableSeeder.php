@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Crater\Models\Currency;
+use Crater\Models\Company;
 use Illuminate\Database\Seeder;
 
 class CurrenciesTableSeeder extends Seeder
@@ -602,9 +603,15 @@ class CurrenciesTableSeeder extends Seeder
             ],
         ];
 
+        // Get all companies
+        $companies = Company::all();
 
-        foreach ($currencies as $currency) {
-            Currency::create($currency);
+        // For each company, create all currencies
+        foreach ($companies as $company) {
+            foreach ($currencies as $currency) {
+                $currency['company_id'] = $company->id;
+                Currency::create($currency);
+            }
         }
     }
 }

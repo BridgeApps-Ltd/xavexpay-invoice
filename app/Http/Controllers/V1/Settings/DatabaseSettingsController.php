@@ -36,8 +36,22 @@ class DatabaseSettingsController extends Controller
             $settings = $company->getDatabaseConnection();
             Log::info('Retrieved database settings', [
                 'company_id' => $company->id,
-                'settings' => array_merge($settings ?? [], ['database_password' => '***'])
+                'has_settings' => !is_null($settings),
+                'settings' => $settings ? array_merge($settings, ['database_password' => '***']) : null
             ]);
+
+            if (!$settings) {
+                // Return empty settings instead of null
+                return response()->json([
+                    'settings' => [
+                        'database_host' => '',
+                        'database_port' => '',
+                        'database_name' => '',
+                        'database_username' => '',
+                        'database_password' => ''
+                    ]
+                ]);
+            }
 
             return response()->json(['settings' => $settings]);
         } catch (\Exception $e) {

@@ -557,12 +557,15 @@ Route::prefix('/v1')->group(function () {
         Route::post('/database', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'saveSettings']);
         Route::post('/database/test', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'testConnection']);
         Route::post('/database/migrate', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'runMigrations']);
-        Route::get('/settings/database/check-migrations', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'checkMigrations']);
+        Route::get('/database/check-migrations', [\Crater\Http\Controllers\V1\Settings\DatabaseSettingsController::class, 'checkMigrations']);
 
         // Payment settings routes
         Route::get('/payment-settings', [\Crater\Http\Controllers\V1\Admin\Settings\PaymentSettingsController::class, 'getSettings']);
         Route::post('/payment-settings', [\Crater\Http\Controllers\V1\Admin\Settings\PaymentSettingsController::class, 'saveSettings']);
     });
+
+    // Add the database settings check endpoint
+    Route::get('/company/database-settings/check', [\Crater\Http\Controllers\V1\Admin\Settings\DatabaseSettingsController::class, 'check']);
 
     // Payment configuration endpoint
     Route::get('/payment-config', function () {

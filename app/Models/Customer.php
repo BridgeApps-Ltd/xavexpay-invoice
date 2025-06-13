@@ -12,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Crater\Traits\ValidatesDatabaseSettings;
 
 class Customer extends Authenticatable implements HasMedia
 {
@@ -21,6 +22,7 @@ class Customer extends Authenticatable implements HasMedia
     use HasCustomFieldsTrait;
     use HasFactory;
     use HasRolesAndAbilities;
+    use ValidatesDatabaseSettings;
 
     protected $guarded = [
         'id'

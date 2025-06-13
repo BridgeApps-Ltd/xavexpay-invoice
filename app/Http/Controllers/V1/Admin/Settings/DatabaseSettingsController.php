@@ -4,6 +4,7 @@ namespace Crater\Http\Controllers\V1\Admin\Settings;
 
 use Crater\Http\Controllers\Controller;
 use Crater\Models\Company;
+use Crater\Models\CompanySetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,46 @@ use Illuminate\Http\JsonResponse;
 
 class DatabaseSettingsController extends Controller
 {
+    /**
+     * Check if database settings are configured
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function check()
+    {
+        try {
+            $company = Company::find(request()->header('company'));
+            
+            if (!$company) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Company not found'
+                ], 404);
+            }
+
+            $hasSettings = CompanySetting::where('company_id', $company->id)
+                ->whereIn('option', [
+                    'database_connection_host',
+                    'database_connection_port',
+                    'database_connection_name',
+                    'database_connection_username',
+                    'database_connection_password'
+                ])
+                ->count() === 5;
+
+            return response()->json([
+                'success' => true,
+                'hasSettings' => $hasSettings
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to check database settings: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check database settings: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Run database migrations
      *

@@ -18,6 +18,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Log;
+use Crater\Traits\ValidatesDatabaseSettings;
 
 class Invoice extends Model implements HasMedia
 {
@@ -25,6 +26,7 @@ class Invoice extends Model implements HasMedia
     use InteractsWithMedia;
     use GeneratesPdfTrait;
     use HasCustomFieldsTrait;
+    use ValidatesDatabaseSettings;
 
     public const STATUS_DRAFT = 'DRAFT';
     public const STATUS_SENT = 'SENT';

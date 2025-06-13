@@ -494,6 +494,8 @@ class Company extends Model implements HasMedia
     public function getDatabaseConnection()
     {
         try {
+            Log::info('Getting database connection settings for company', ['company_id' => $this->id]);
+            
             $settings = CompanySetting::where('company_id', $this->id)
                 ->whereIn('option', [
                     'database_connection_host',
@@ -504,8 +506,14 @@ class Company extends Model implements HasMedia
                 ])
                 ->get();
 
+            Log::info('Retrieved settings from database', [
+                'company_id' => $this->id,
+                'settings_count' => $settings->count(),
+                'settings_found' => $settings->pluck('option')->toArray()
+            ]);
+
             if ($settings->isEmpty()) {
-                Log::info('No database settings found for company', ['company_id' => $this->id]);
+                Log::warning('No database settings found for company', ['company_id' => $this->id]);
                 return null;
             }
 
@@ -515,14 +523,16 @@ class Company extends Model implements HasMedia
                 $connection[$key] = $setting->value;
             }
 
-            Log::info('Retrieved database settings for company', [
+            Log::info('Processed database settings', [
                 'company_id' => $this->id,
                 'settings' => array_merge($connection, ['database_password' => '***'])
             ]);
 
             return $connection;
         } catch (\Exception $e) {
-            Log::error('Failed to get database connection settings for company ' . $this->id . ': ' . $e->getMessage());
+            Log::error('Failed to get database connection settings for company ' . $this->id . ': ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return null;
         }
     }

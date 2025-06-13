@@ -161,13 +161,24 @@ export default {
       try {
         const companyId = this.getCompanyId();
         if (!companyId) {
-          console.error('No company ID available');
           this.error = 'No company ID available. Please select a company first.';
           return;
         }
 
         const response = await axios.get(`/api/v1/settings/database?company_id=${companyId}`);
-        console.log("... Database Settings from API /api/v1/settings/database: "+response.data);
+        
+        if (!response.data.settings) {
+          // Initialize with empty values - this is a valid state for a new company
+          this.databaseSettings = {
+            database_connection_host: '',
+            database_connection_port: '',
+            database_connection_name: '',
+            database_connection_username: '',
+            database_connection_password: ''
+          };
+          return;
+        }
+
         this.databaseSettings = {
           database_connection_host: response.data.settings.database_host || '',
           database_connection_port: response.data.settings.database_port || '',
@@ -178,7 +189,6 @@ export default {
         this.canRunMigrations = true;
       } catch (error) {
         this.error = 'Failed to load database settings';
-        console.error('... Error loading settings:', error);
       }
     },
     async testConnection() {

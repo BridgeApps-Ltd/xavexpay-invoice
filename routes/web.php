@@ -195,3 +195,8 @@ Route::get('/{any}', function ($any) {
 })->where('any', '.*');
 
 Route::post('/settings/database/migrate', [DatabaseSettingsController::class, 'runMigrations'])->name('settings.database.migrate');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/company/database-settings/check', 'V1\Admin\Settings\DatabaseSettingsController@check')
+        ->name('company.database-settings.check');
+});

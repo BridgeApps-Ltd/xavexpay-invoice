@@ -112,6 +112,13 @@ class DatabaseSettingsController extends Controller
                 '--force' => true
             ]);
 
+            // Run custom fields seeder
+            Artisan::call('db:seed', [
+                '--database' => 'company',
+                '--class' => 'Database\Seeders\CustomFieldsSeeder',
+                '--force' => true
+            ]);
+
             // Setup company defaults
             $company->setupDefaultData();
             $company->setupDefaultUnits();

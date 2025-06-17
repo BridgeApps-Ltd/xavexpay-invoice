@@ -9,6 +9,7 @@ use Crater\Models\PaymentMethod;
 use Crater\Models\Setting;
 use Crater\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class CompanySeeder extends Seeder
 {
@@ -19,86 +20,63 @@ class CompanySeeder extends Seeder
      */
     public function run()
     {
-        // Get the company from the request
-        $company = Company::find(request()->company_id);
+        // Get the company from the request or use the first company
+        $company = Company::find(request()->company_id) ?? Company::first();
         
         if (!$company) {
+            Log::error('No company found for seeding');
             return;
         }
 
-        // Create default currency
-        Currency::create([
-            'name' => 'US Dollar',
-            'code' => 'USD',
-            'symbol' => '$',
-            'precision' => '2',
-            'thousand_separator' => ',',
-            'decimal_separator' => '.',
-            'company_id' => $company->id
-        ]);
+        Log::info('Seeding company data', ['company_id' => $company->id]);
 
-        // Create default payment methods
-        PaymentMethod::create(['name' => 'Cash', 'company_id' => $company->id]);
-        PaymentMethod::create(['name' => 'Check', 'company_id' => $company->id]);
-        PaymentMethod::create(['name' => 'Credit Card', 'company_id' => $company->id]);
-        PaymentMethod::create(['name' => 'Bank Transfer', 'company_id' => $company->id]);
+        // Create default currency if it doesn't exist
+        $defaultCurrency = Currency::where('company_id', $company->id)
+            ->where('code', 'USD')
+            ->first();
 
-        // Create default units
-        Unit::create(['name' => 'box', 'company_id' => $company->id]);
-        Unit::create(['name' => 'cm', 'company_id' => $company->id]);
-        Unit::create(['name' => 'dz', 'company_id' => $company->id]);
-        Unit::create(['name' => 'ft', 'company_id' => $company->id]);
-        Unit::create(['name' => 'g', 'company_id' => $company->id]);
-        Unit::create(['name' => 'in', 'company_id' => $company->id]);
-        Unit::create(['name' => 'kg', 'company_id' => $company->id]);
-        Unit::create(['name' => 'km', 'company_id' => $company->id]);
-        Unit::create(['name' => 'lb', 'company_id' => $company->id]);
-        Unit::create(['name' => 'mg', 'company_id' => $company->id]);
-        Unit::create(['name' => 'pc', 'company_id' => $company->id]);
-
-        // Create default company settings
-        $settings = [
-            'invoice_set_due_date_automatically' => 'YES',
-            'invoice_due_date_days' => 7,
-            'estimate_set_expiry_date_automatically' => 'YES',
-            'estimate_expiry_date_days' => 7,
-            'estimate_convert_action' => 'no_action',
-            'bulk_exchange_rate_configured' => "NO",
-            'invoice_number_format' => "{{SERIES:INV}}{{DELIMITER:-}}{{SEQUENCE:6}}",
-            'estimate_number_format' => "{{SERIES:EST}}{{DELIMITER:-}}{{SEQUENCE:6}}",
-            'payment_number_format' => "{{SERIES:PAY}}{{DELIMITER:-}}{{SEQUENCE:6}}",
-            'language' => 'en',
-            'timezone' => 'UTC',
-            'date_format' => 'Y-m-d',
-            'time_format' => 'H:i',
-            'fiscal_year' => '1-12',
-            'carbon_date_format' => 'Y-m-d',
-            'moment_date_format' => 'YYYY-MM-DD',
-            'notification_email' => 'enabled',
-            'notify_invoice_viewed' => 'NO',
-            'notify_estimate_viewed' => 'NO',
-            'tax_per_item' => 'NO',
-            'discount_per_item' => 'NO',
-            'invoice_mail_body' => 'Thank you for your business. Please find the invoice attached.',
-            'estimate_mail_body' => 'Thank you for your business. Please find the estimate attached.',
-            'payment_mail_body' => 'Thank you for your payment. Please find the payment receipt attached.',
-            'invoice_company_address_format' => '{{company_name}}<br>{{company_address}}<br>{{company_city}} {{company_state}} {{company_zip}}<br>{{company_country}}<br>{{company_phone}}',
-            'estimate_company_address_format' => '{{company_name}}<br>{{company_address}}<br>{{company_city}} {{company_state}} {{company_zip}}<br>{{company_country}}<br>{{company_phone}}',
-            'payment_company_address_format' => '{{company_name}}<br>{{company_address}}<br>{{company_city}} {{company_state}} {{company_zip}}<br>{{company_country}}<br>{{company_phone}}',
-            'invoice_shipping_address_format' => '{{shipping_address}}<br>{{shipping_city}} {{shipping_state}} {{shipping_zip}}<br>{{shipping_country}}',
-            'estimate_shipping_address_format' => '{{shipping_address}}<br>{{shipping_city}} {{shipping_state}} {{shipping_zip}}<br>{{shipping_country}}',
-            'payment_shipping_address_format' => '{{shipping_address}}<br>{{shipping_city}} {{shipping_state}} {{shipping_zip}}<br>{{shipping_country}}',
-            'invoice_billing_address_format' => '{{billing_address}}<br>{{billing_city}} {{billing_state}} {{billing_zip}}<br>{{billing_country}}',
-            'estimate_billing_address_format' => '{{billing_address}}<br>{{billing_city}} {{billing_state}} {{billing_zip}}<br>{{billing_country}}',
-            'payment_billing_address_format' => '{{billing_address}}<br>{{billing_city}} {{billing_state}} {{billing_zip}}<br>{{billing_country}}',
-        ];
-
-        foreach ($settings as $key => $value) {
-            CompanySetting::create([
-                'company_id' => $company->id,
-                'option' => $key,
-                'value' => $value
+        if (!$defaultCurrency) {
+            Log::info('Creating default currency for company', ['company_id' => $company->id]);
+            Currency::create([
+                'name' => 'US Dollar',
+                'code' => 'USD',
+                'symbol' => '$',
+                'precision' => '2',
+                'thousand_separator' => ',',
+                'decimal_separator' => '.',
+                'company_id' => $company->id
             ]);
         }
+
+        // Set default currency in company settings
+        CompanySetting::setSetting('currency', 'USD', $company->id);
+
+        // Create default payment methods if they don't exist
+        $paymentMethods = [
+            'Cash',
+            'Check',
+            'Credit Card',
+            'Bank Transfer'
+        ];
+
+        foreach ($paymentMethods as $method) {
+            if (!PaymentMethod::where('name', $method)->where('company_id', $company->id)->exists()) {
+                PaymentMethod::create(['name' => $method, 'company_id' => $company->id]);
+            }
+        }
+
+        // Create default units if they don't exist
+        $units = [
+            'box', 'cm', 'dz', 'ft', 'g', 'in', 'kg', 'km', 'lb', 'mg',
+            'm', 'pcs', 'set', 'sq ft', 'sq m', 't', 'yd', 'ml', 'l'
+        ];
+
+        foreach ($units as $unit) {
+            if (!Unit::where('name', $unit)->where('company_id', $company->id)->exists()) {
+                Unit::create(['name' => $unit, 'company_id' => $company->id]);
+            }
+        }
+
+        Log::info('Company seeding completed', ['company_id' => $company->id]);
     }
 } 

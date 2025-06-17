@@ -6,6 +6,7 @@ use Closure;
 use Crater\Models\CompanySetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 class CheckDatabaseSettings
 {
@@ -18,14 +19,21 @@ class CheckDatabaseSettings
      */
     public function handle(Request $request, Closure $next)
     {
-        // Skip check for database settings page and API routes
-        if ($request->is('settings/database*') || 
+        // Skip check for installation routes and database settings pages
+        if ($request->is('installation*') || 
+            $request->is('settings/database*') || 
             $request->is('api/v1/settings/database*') || 
             $request->is('api/v1/company/database-settings*') ||
             $request->is('api/v1/bootstrap') ||
             $request->is('api/v1/auth*') ||
             $request->is('api/v1/companies*') ||
             $request->is('api/v1/dashboard')) {
+            return $next($request);
+        }
+
+        // Check if we're in installation process
+        $installed = File::exists(storage_path('installed'));
+        if (!$installed) {
             return $next($request);
         }
 

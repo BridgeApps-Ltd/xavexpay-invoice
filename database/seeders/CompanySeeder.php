@@ -33,7 +33,7 @@ class CompanySeeder extends Seeder
         // Create default currency if it doesn't exist
         $defaultCurrency = Currency::where('company_id', $company->id)
             ->where('code', 'USD')
-            ->first();
+            ->first();  
 
         if (!$defaultCurrency) {
             Log::info('Creating default currency for company', ['company_id' => $company->id]);
@@ -49,7 +49,7 @@ class CompanySeeder extends Seeder
         }
 
         // Set default currency in company settings
-        CompanySetting::setSetting('currency', 'USD', $company->id);
+        CompanySetting::setSettings(['currency' => 'USD'], $company->id);
 
         // Create default payment methods if they don't exist
         $paymentMethods = [
